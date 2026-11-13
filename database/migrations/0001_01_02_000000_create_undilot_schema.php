@@ -602,9 +602,30 @@ return new class extends Migration
             $table->string('legacy_id', 20)->nullable();
             $table->string('source_table', 100)->nullable();
 
-            // `usahawan`: one flat row per participant per event, which is what
-            // undilot splits across users, companies, event_registrations and
-            // polls. It carries no email, no password and no event column.
+            /*
+             * `usahawan`: the office's REGISTER OF PARTICIPANTS — one row per
+             * usahawan, not one per event. That is why it has no `event` column
+             * and why the dump indexes `name`, `ic` and `companyname`: it is
+             * looked up, not appended to per draw.
+             *
+             * One row holds both the person and their company, which is exactly
+             * the pair undilot keeps as `users` + `companies` — and
+             * `companies.user_id` is unique, so the shapes agree.
+             *
+             * THE TRAP IS THE DRAW COLUMNS. `lot`, `location`, `votetime`,
+             * `undi`, `preset`, `payment`, `bayarstatus` and `votetimepay` sit
+             * on this row with nothing naming an event, so they hold the LATEST
+             * draw only, overwritten each time. Per-event history lives in
+             * `ukhemah`, which does carry `event`. A transform that reads a lot
+             * from here would hand the last draw's result to every event.
+             *
+             * IDENTITY IS THE OTHER PROBLEM. There is no email and no password,
+             * while `users.email` is unique and required. So `ic` is the only
+             * candidate key — and the dump indexes it without a UNIQUE, so two
+             * rows may share one, and a row may carry ''. Both collide with
+             * `users.email` unique and `companies.user_id` unique, and have to
+             * be resolved before the insert rather than discovered during it.
+             */
             $table->string('name', 200)->nullable();
             $table->string('ic', 20)->nullable();
             $table->string('address', 200)->nullable();
