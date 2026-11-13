@@ -413,10 +413,57 @@ peraturan bermakna pemuatan tidak perlu pemetaan per-lajur dan audit ialah diff.
 
 `legacy_id` menyimpan `id` asal, kerana tanpanya pautan antara jadual lama tidak
 boleh dibina semula (`ukhemah.usahawanid` → `usahawan.id`,
-`usahawan.byuser` → `upengawai.id`). `source_table` menamakan jadual asal: dump
-itu ada **lima belas** jadual `ukhemah*` — satu hidup, empat belas snapshot
-setiap jam (`ukhemah_day1_2pm`, `ukhemah_18 feb 11`), dan `ukhemah10` berhenti
-selepas enam lajur.
+`usahawan.byuser` → `upengawai.id`). `source_table` menamakan jadual asal, dan
+dump itu ada **lebih** daripada satu keluarga salinan: jadual `ukhemah*` (hidup,
+snapshot setiap jam seperti `ukhemah_day1_2pm`, jadual per-acara bernama seperti
+`ukhemah_fkj2024`, dan `ukhemah10` yang berhenti selepas enam lajur), **dan**
+`usahawan*` yang ada salinan dalam gaya sama (`usahawan_19 feb 6pm`).
+`event` **bukan** milik jadual hidup sahaja — `ukhemah_fkj2024` membawanya juga
+(`'FKJ'`).
+
+### `ukhemah` ialah pelan, bukan pendaftaran
+
+Satu baris `ukhemah` ialah **satu gerai**: `boothid` (`KH01`, `TBA02`) berdiri di
+lokasi yang `khemah` namakan (`Khemah A`, `Basement`, `PADANG AKASIA , ANGSANA
+JOHOR BAHRU MALL`), dikategorikan ikut kraf, dengan `usahawanid` **kosong**
+sehingga ada yang memegangnya. Itu jadual `plots` undilot dengan peruntukannya
+sebaris. Transform membina **plot**, bukan entri cabutan, daripada sini.
+`prio` ialah keutamaan gerai dan `protokol` (`'Ya'`) menandakan gerai simpanan.
+
+### Tiga lajur kraf lama tidak bermaksud apa namanya kata
+
+Ini sambungan langsung kepada amaran dua-senarai `kraf_bidangs`, dibaca
+daripada baris sebenar:
+
+| Lajur lama | Sebenarnya | Contoh |
+|---|---|---|
+| `bidang` | **kategori** kraf | `Tekstil`, `Hasil Rimba`, `Hasil Tanah`, `Aneka Kraf` |
+| `crafttype` | **kod** kraf + saiz plot | `Batik-TBA-3x3`, `Buluh/Rotan-RBH-3x3` |
+| `category` | **bukan kraf** — kategori usahawan | `Pentahapan 2 (Pengilang/Pedagang,Pengeluar,Agensi)` |
+
+Jadi lajur bernama `category` pergi ke `companies.entrepreneur_category`, bukan
+ke mana-mana senarai kraf. `bidang` ke kategori (`code` NULL), `crafttype` ke kod
+(`code` berisi).
+
+**`crafttype` ada dua era.** Data lama membawa nama kosong tanpa kod dan tanpa
+saiz (`Songket`, `Tenun`, `Kayu(Hiasan Ukiran & Kegunaan)`); data baharu
+melekatkan kod dan saiz (`Batik-TBA-3x3`). Pecah dari **kanan** — nama kraf
+sendiri boleh mengandungi tanda baca. `boothid` mengulang kod itu sebagai prefiks
+dalam data baharu (`TBA02` ← TBA), yang boleh digunakan untuk menyemak bacaan
+pertama; `boothid` lama (`KH01`, `PS05`) tidak mengikut senarai kod.
+
+`salu` ialah **kata panggilan** (`Puan`), bukan status.
+
+### Pembersihan yang data sebenar sudah tunjukkan perlu
+
+- **Ruang hujung**: `boothid` `'TBA06 '`, `comid` `'10-1-62  '`, `'14-1-14   '`.
+- **Zero-date benar-benar ada**: `votetimepay` = `'0000-00-00 00:00:00'` dalam
+  setiap baris sampel.
+- **IC dua format**: `'890508-12-0000'` berbanding `'800601100000'`.
+- **Huruf besar/kecil tidak sepadan antara jadual**: `usahawan.location` =
+  `'KHEMAH A'` sedangkan `ukhemah.khemah` = `'Khemah A'`. Join mesti normalisasi.
+- **Bendera bercampur bahasa**: `undi` = `'Yes'`, `bayarstatus` / `sstatus` =
+  `'Ya'` / `'Tidak'`.
 
 Transform dari staging ke jadual aplikasi yang membuat keputusan. **Jangan**
 tambah lajur status (`sstatus`, `bayarstatus`, `Protokol`) kepada

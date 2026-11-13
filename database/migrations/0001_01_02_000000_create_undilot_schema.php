@@ -572,6 +572,30 @@ return new class extends Migration
          * `imported_at` instead of `timestamps()`: a staging row is written once
          * and never updated, so `updated_at` would be a copy of `created_at`
          * forever. The only fact worth keeping is when the load ran.
+         *
+         * THE THREE CRAFT COLUMNS DO NOT MEAN WHAT THEY ARE CALLED, and getting
+         * them backwards is the mistake this schema's `kraf_bidangs` note warns
+         * about. Read off real rows:
+         *
+         *   `bidang`    the craft CATEGORY — 'Tekstil', 'Hasil Rimba',
+         *               'Hasil Tanah', 'Aneka Kraf'. Title case here, upper case
+         *               in `kraf_bidangs`.
+         *   `crafttype` the craft CODE, with the plot size glued on in the newer
+         *               data: 'Batik-TBA-3x3', 'Buluh/Rotan-RBH-3x3'. Older rows
+         *               carry a bare name instead — 'Songket', 'Tenun',
+         *               'Kayu(Hiasan Ukiran & Kegunaan)' — with no code and no
+         *               size. Split from the RIGHT: the craft name itself can
+         *               hold punctuation.
+         *   `category`  NOT a craft at all — the ENTREPRENEUR category,
+         *               'Pentahapan 2 (Pengilang/Pedagang,Pengeluar,Agensi)'.
+         *               It belongs in `companies.entrepreneur_category`.
+         *
+         * `boothid` repeats the code as its prefix in the newer data (TBA02 for
+         * TBA, AMH03 for AMH), which is a second reading of the same fact and a
+         * way to check the first. Older booth ids (KH01, PS05, ST11) follow no
+         * code list.
+         *
+         * `salu` is a SALUTATION ('Puan'), not a status.
          */
         Schema::create('legacy_upengawai', function (Blueprint $table) {
             $table->id();
@@ -672,9 +696,27 @@ return new class extends Migration
             $table->string('legacy_id', 20)->nullable();
             $table->string('source_table', 100)->nullable();
 
-            // The widest shape of the fifteen `ukhemah*` tables. Only the live
-            // `ukhemah` has `event`; the fourteen snapshots do not, and
-            // `ukhemah10` stops after `subtypeitem`.
+            /*
+             * `ukhemah` IS THE PLAN, NOT THE REGISTRATIONS. Read against real
+             * rows: one row is one booth — `boothid` ('KH01', 'TBA02') standing
+             * at a location named by `khemah` ('Khemah A', 'Basement', 'PADANG
+             * AKASIA , ANGSANA JOHOR BAHRU MALL'), categorised by craft, with
+             * `usahawanid` EMPTY until somebody holds it. That is undilot's
+             * `plots` table with its allocation inlined, so the transform builds
+             * plots and their allocation from here — not draw entries.
+             *
+             * THE WIDEST SHAPE OF THE `ukhemah*` TABLES, and there are more than
+             * the snapshots: `ukhemah_fkj2024` is a named per-event table that
+             * DOES carry `event` ('FKJ'), so `event` is not the live table's
+             * alone. `ukhemah10` stops after `subtypeitem`. `usahawan` has
+             * copies of its own in the same style (`usahawan_19 feb 6pm`), which
+             * is why `source_table` is on all three staging tables and not just
+             * this one.
+             *
+             * `prio` is the priority a booth carries, and `protokol` ('Ya' or
+             * empty) marks a reserved one — the sample's `protokol = 'Ya'` rows
+             * are the ones with `prio = 6`.
+             */
             $table->string('khemah', 100)->nullable();
             $table->string('typeitem', 100)->nullable();
             $table->string('usahawanid', 11)->nullable();
