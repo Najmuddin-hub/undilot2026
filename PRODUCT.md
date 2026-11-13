@@ -63,7 +63,8 @@ until the company confirms.
   Confirm (once) → animated reveal (split-flap board or sealed envelope, one choice
   for every event under Setting › Lot Draw) → lot details, check-in QR from their
   IC, printable/shareable PDF slip. Notifications (a reminder before
-  voting closes, join-request answers) arrive in the portal.
+  voting closes, confirmation that the office has added the company to a
+  draw) arrive in the portal.
 - **Public site:** an event list and a page per event, sharing the portal's top
   bar and footer.
 - Two sign-ins, separate: admin and participant.

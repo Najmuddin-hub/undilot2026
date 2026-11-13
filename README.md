@@ -13,7 +13,8 @@ mengandungi lima modul.
 | Cabutan lot | `/admin/polling`, `/events/{event}/lot` |
 
 Yang dibuang: pengumuman, halaman footer, pautan sosial, skrin audit trail,
-laporan CSV. Data sebenar akan dimuat dari CSV (belum ada).
+laporan CSV dan permohonan sertai — pejabat memasukkan setiap syarikat ke
+senarai cabutan sendiri. Data sebenar akan dimuat dari CSV (belum ada).
 
 ## Pasang
 
