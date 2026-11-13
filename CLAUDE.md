@@ -521,6 +521,30 @@ Dua perkara yang menggigit dan kini dikunci ujian:
   **hilang tanpa sebarang amaran**. Slug pertama menang; yang kemudian membawa
   `legacy_id`.
 
+### Zon lama **mesti** diterjemah, tidak boleh disimpan mentah
+
+`App\Support\LegacyZones` memetakan nama zon lama kepada zon undilot. Ia bukan
+kemasan — ia pembetulan pepijat yang diukur pada baris sebenar.
+
+Dump membawa **18 nama zon dan 7 bukan zon undilot** (`P.Penang`,
+`N.Sembilan`, `Selangor`, `Kuala Lumpur`, `Sabah`, `Kedah(Langkawi)`,
+`P.Langkawi (Kedah)`). Pejabat sendiri tidak konsisten: dump ada **kedua-dua**
+`N.Sembilan` dan `Negeri Sembilan`, **kedua-dua** `P.Penang` dan `Pulau Pinang`.
+
+Disimpan mentah, skop **nampak** berfungsi — baris import salah dengan cara yang
+sama, jadi admin lama padan syarikat lama. Yang pecah ialah **borang**: setiap
+dropdown zon dibina daripada `AdminZones`, jadi syarikat pada `'P.Penang'`
+membuka borang suntingannya dengan **tiada option `selected`**, dan simpanan
+seterusnya memindahkannya ke zon pertama dalam senarai — tanpa ralat, tanpa
+pengesahan. Diukur pada baris sebenar, bukan dibayangkan. Itu persis kegagalan
+yang docblock `AdminZones` sendiri beri amaran.
+
+Dua zon lama bergabung jadi satu (`Selangor` + `Kuala Lumpur` →
+`Selangor, Kuala Lumpur dan Putrajaya`), dan satu zon tetap satu admin.
+Sasaran diselesaikan terhadap **senarai hidup**, bukan salinan — zon ialah
+`ManagedList` yang boleh dinamakan semula. Nama tanpa pemetaan **melontar**,
+tidak disimpan mentah.
+
 ### `legacy:transform-aacb` membina satu acara, bukan sejarah
 
 Ia membina acara AACB penuh daripada staging: pelan (4 pasangan lokasi/saiz),

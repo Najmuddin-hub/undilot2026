@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Admin;
 use App\Models\Company;
 use App\Models\User;
+use App\Support\LegacyZones;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -119,7 +120,11 @@ class LegacyAccounts extends Command
         $handlesTaken = [];
 
         foreach ($officers as $officer) {
-            $zone = trim((string) $officer->state);
+            // TRANSLATED, never stored raw. `admins.state` is compared to
+            // `companies.state` as a string, so a zone name the office's
+            // dropdown does not contain is an account that can be moved out of
+            // its own zone by any save. See LegacyZones.
+            $zone = LegacyZones::translate($officer->state);
             $handle = $this->handleFor($officer, $handlesTaken);
 
             if ($roles !== []) {
@@ -129,7 +134,9 @@ class LegacyAccounts extends Command
                 continue;
             }
 
-            if ($zone === '' || isset($zonesTaken[$zone])) {
+            // Two legacy zones can translate to one undilot zone (Selangor and
+            // Kuala Lumpur both do), and a zone takes one admin.
+            if ($zone === null || isset($zonesTaken[$zone])) {
                 continue;
             }
 
@@ -214,6 +221,11 @@ class LegacyAccounts extends Command
                     // as written: normalising it is the transform's decision and
                     // belongs where it can be tested.
                     'ic_number' => trim((string) $row->ic) ?: null,
+                    // `comid` is the office's community id, filled on 174 of the
+                    // 175 live rows — and 2,182 rows across the dump carry it
+                    // with trailing spaces, which is why it is trimmed here
+                    // rather than in staging.
+                    'community_id' => trim((string) $row->comid) ?: null,
                     'is_active' => true,
                 ]
             );
@@ -222,9 +234,23 @@ class LegacyAccounts extends Command
 
             $company->fill([
                 'name' => trim((string) $row->companyname),
-                'state' => trim((string) $row->state) ?: null,
+                'state' => LegacyZones::translate($row->state),
                 'is_active' => true,
             ]);
+
+            /*
+             * NO `company_krafs` ROW IS BUILT, and that is a limit of the dump
+             * rather than an oversight. The craft hierarchy selection needs both
+             * halves — `company_krafs.sub_bidang_id` is NOT NULL — and while
+             * `usahawan.bidang` gives the category on all 175 rows, the matching
+             * `subcrafttype` is 0% filled in every table of the dump. Inventing
+             * a sub-category to satisfy the foreign key would put a craft on a
+             * company that the office never recorded.
+             *
+             * So the Companies list shows those two columns empty for imported
+             * rows, which is true. `companies.kraf_code` is the field the draw
+             * actually matches on, and that one is filled.
+             */
 
             // `kraf_code` and `plot_size` are NOT fillable, deliberately — the
             // model marks them admin-only, and `plot_size` normally moves

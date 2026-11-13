@@ -3,6 +3,8 @@
 use App\Models\Admin;
 use App\Models\Company;
 use App\Models\User;
+use App\Support\AdminZones;
+use Illuminate\Support\Facades\DB;
 
 /*
  * The accounts command exists because the dump cannot answer two questions, and
@@ -121,6 +123,105 @@ it('gives two officers who share one login two accounts, and does not let the se
     // One role of each at the top, not two state admins.
     expect(Admin::where('email', 'like', '%@legacy.test')->where('role', 'hq')->count())->toBe(1)
         ->and(Admin::where('email', 'like', '%@legacy.test')->where('role', Admin::SUPER_ROLE)->count())->toBe(1);
+});
+
+it('translates a legacy zone the office dropdown does not have', function () {
+    loadForAccounts();
+
+    // 'P.Penang' and 'Kedah(Langkawi)' are real values in the dump and neither
+    // is an undilot zone. The dump is inconsistent with itself too: it also
+    // writes 'Pulau Pinang' and 'Negeri Sembilan' in other rows.
+    DB::table('legacy_usahawan')->insert([
+        'legacy_id' => '300', 'source_table' => 'usahawan',
+        'name' => 'ABDUL AZMI BIN JAAFAR', 'ic' => '591202-07-5507', 'state' => 'P.Penang',
+        'companyname' => 'JATI INDAH MULIA', 'crafttype' => 'Batik-TBP-3x3',
+        'lot' => 'TBP07', 'location' => 'BASEMENT', 'votetime' => '2025-10-06 11:00:00',
+        'bidang' => 'Tekstil', 'salu' => 'Encik', 'preset' => 'TBP07',
+        'comid' => '07-3-21  ', 'byuser' => '40', 'imported_at' => now(),
+    ]);
+
+    Artisan::call('legacy:accounts', ['--users' => 'all']);
+
+    $company = Company::whereHas('user', fn ($q) => $q->where('email', 'usahawan300@legacy.test'))->first();
+
+    // THE BUG THIS LOCKS. Stored raw, `companies.state` is 'P.Penang', which no
+    // zone dropdown contains — so the edit form renders with NO option selected
+    // and the next save silently moves the company to whichever zone sits first
+    // in the list, taking it away from its own state admin with no error.
+    expect($company->state)->toBe('Pulau Pinang');
+
+    expect(AdminZones::has($company->state))->toBeTrue(
+        "A company on a zone outside AdminZones cannot be edited without being moved."
+    );
+});
+
+it('puts every imported zone inside the office vocabulary, admins included', function () {
+    loadForAccounts();
+    Artisan::call('legacy:accounts', ['--users' => 'all']);
+
+    // The fixture's officer 30 carries 'Kedah(Langkawi)'.
+    foreach (Admin::where('email', 'like', '%@legacy.test')->whereNotNull('state')->get() as $admin) {
+        expect(AdminZones::has($admin->state))->toBeTrue(
+            "Admin {$admin->email} is on '{$admin->state}', which is not a zone."
+        );
+    }
+
+    foreach (Company::whereHas('user', fn ($q) => $q->where('email', 'like', '%@legacy.test'))->get() as $company) {
+        expect(AdminZones::has($company->state))->toBeTrue(
+            "Company {$company->name} is on '{$company->state}', which is not a zone."
+        );
+    }
+});
+
+it('collapses two legacy zones that became one, and still gives it one admin', function () {
+    loadForAccounts();
+
+    // The old system ran Selangor and Kuala Lumpur as separate offices; undilot
+    // has one zone covering Selangor, KL and Putrajaya.
+    DB::table('legacy_upengawai')->insert([
+        [
+            'legacy_id' => '50', 'source_table' => 'upengawai', 'name' => 'OFFICER SELANGOR',
+            'userright' => 'Pengawai', 'loginname' => 'sel', 'state' => 'Selangor',
+            'imported_at' => now(),
+        ],
+        [
+            'legacy_id' => '51', 'source_table' => 'upengawai', 'name' => 'OFFICER KL',
+            'userright' => 'Pengawai', 'loginname' => 'kl', 'state' => 'Kuala Lumpur',
+            'imported_at' => now(),
+        ],
+    ]);
+
+    Artisan::call('legacy:accounts');
+
+    $zone = 'Selangor, Kuala Lumpur dan Putrajaya';
+
+    expect(Admin::where('state', $zone)->count())
+        ->toBe(1, 'A zone takes one state admin, however many offices fed into it.');
+});
+
+it('refuses a legacy zone it has no mapping for, rather than planting it raw', function () {
+    loadForAccounts();
+
+    DB::table('legacy_upengawai')->insert([
+        'legacy_id' => '60', 'source_table' => 'upengawai', 'name' => 'OFFICER NOWHERE',
+        'userright' => 'Pengawai', 'loginname' => 'nowhere', 'state' => 'Wilayah Baru',
+        'imported_at' => now(),
+    ]);
+
+    // Silently storing it would put an admin where no company can ever be, and
+    // storing the company's side of it would hide the company from everyone.
+    expect(fn () => Artisan::call('legacy:accounts'))
+        ->toThrow(RuntimeException::class, 'Wilayah Baru');
+});
+
+it('carries the community id across, trimmed', function () {
+    loadForAccounts();
+    Artisan::call('legacy:accounts');
+
+    // `comid` is filled on 174 of the 175 live rows, and 2,182 rows across the
+    // dump carry it with trailing spaces: '10-1-62  '.
+    expect(User::where('email', 'usahawan205@legacy.test')->value('community_id'))
+        ->toBe('10-1-62');
 });
 
 it('never writes a password anybody could know', function () {
