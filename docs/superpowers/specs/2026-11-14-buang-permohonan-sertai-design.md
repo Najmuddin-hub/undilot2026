@@ -32,6 +32,12 @@ sendiri tanpa permohonan (`EntRegistrationController::verify()`, cabang
 mereka ada dalam cabutan — memecahkan perkara yang pembuangan ini sepatutnya
 melindungi. Jadi: dinamakan `AddedToDraw`, membawa cabang kelulusan sahaja.
 
+**`beingAdded` kekal.** Ia membaca `event_registrations` dan `first_verified_at`
+sahaja — *"pejabat sedang menambah syarikat anda ke cabutan ini"* — dan tidak
+menyentuh permohonan sertai. Itu tepat aliran pejabat-masukkan-data yang
+pembuangan ini menjadikan satu-satunya laluan, jadi mesejnya jadi **lebih**
+penting, bukan kurang.
+
 **Juga tidak disentuh:** model dua-semakan (zon → HQ), `PollingGuard`,
 `first_verified_at`, skop `announced()`, `payment_note`, `RemovedFromDraw`,
 `EventRegistration::booted()`.
@@ -95,7 +101,7 @@ method tanpa pemanggil.
 |---|---|
 | `Admin/EntRegistrationController` | buang `approve()`, `reject()`, pengumpulan bukti bayaran, panel permohonan menunggu, `rejectedByZone()`; `verify()` menghantar `AddedToDraw` pada `$first` sahaja |
 | `Admin/DashboardController` | buang kiraan `join_pending` dan `zone_rejected` |
-| `HomeController` | `show()` buang `joinRequest` dan `beingAdded`; `dashboard()` buang senarai permohonan dan acara-boleh-disertai, tinggal cabutan sahaja |
+| `HomeController` | `show()` buang `joinRequest` **sahaja**; `dashboard()` buang senarai permohonan dan acara-boleh-disertai, tinggal cabutan sahaja |
 | `NotificationController` | kemas kini rujukan kepada nama notifikasi baharu |
 | `DevAutoLoginController` | kemas kini komen yang menamakan notifikasi |
 
