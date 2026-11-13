@@ -8,8 +8,7 @@ use App\Models\User;
 
 /**
  * The Companies list in the office's column order — owner, IC, community ID,
- * company, craft category and sub-category, zone — and an Export that is
- * exactly the rows on screen.
+ * company, craft category and sub-category, zone.
  */
 function listedCompany(string $name, string $zone, array $owner = []): Company
 {

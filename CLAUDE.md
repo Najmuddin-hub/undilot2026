@@ -36,8 +36,8 @@ disalin.
 | Laluan | `f:\herd\undilot2026` |
 | URL | `http://undilot2026.test` (Herd) |
 | DB | `undilot2026` pada `127.0.0.1` — sendiri |
-| PHP CLI | `/c/Users/ALOY/.config/herd/bin/php84.bat` |
-| MySQL CLI | `/c/Program Files/MySQL/MySQL Server 9.5/bin/mysql.exe` |
+| PHP CLI | `/c/Users/DELL/.config/herd/bin/php84.bat` |
+| MySQL CLI | `/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe` |
 | Admin pertama | dari `.env` — `ADMIN_SEED_EMAIL` / `ADMIN_SEED_PASSWORD` |
 | Log masuk pantas | `http://undilot2026.test/auto` — sebarang akaun, tanpa kata laluan, plus butang *Work the queue* |
 | DB suite pelayar | `undilot2026_e2e`, dicipta dan ditetapkan semula oleh `tests/e2e/serve.js` |
@@ -47,7 +47,8 @@ disalin.
 menanya pangkalan data, atau skrip PHP yang memuat `bootstrap/app.php`.
 
 Setiap notifikasi berbaris (queue). Pada mesin ini tiada pekerja berjalan, jadi
-pengumuman dan peringatan kekal dalam `jobs` sehingga butang pada `/auto` ditekan.
+peringatan undian, jawapan permohonan sertai dan notis pembuangan kekal dalam
+`jobs` sehingga butang pada `/auto` ditekan.
 
 **Jerangkap shell pada mesin ini:** `php` tiada dalam PATH bash — guna
 `php84.bat` di atas (Node dengan `shell: true` menemuinya). Heredoc bash yang

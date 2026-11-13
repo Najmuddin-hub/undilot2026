@@ -93,8 +93,7 @@ class Company extends Model
 
     /**
      * The Companies list's filters: search, zone, and the dashboard's "missing"
-     * links. Shared by the list and its Export, so the file is always the rows
-     * on screen. A state admin's own-zone SCOPE is not here; each caller adds it.
+     * links. A state admin's own-zone SCOPE is not here; each caller adds it.
      */
     public function scopeListFilters($query, \Illuminate\Http\Request $request)
     {

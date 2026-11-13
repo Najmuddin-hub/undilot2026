@@ -511,7 +511,7 @@ return new class extends Migration
          * Laravel's own notifications table, written out here rather than
          * published, so the whole schema stays in one file.
          *
-         * It is NOT optional even before any announcement screen exists:
+         * It is NOT optional even if nothing has ever been sent:
          * AppServiceProvider's `notifications.unread-count` binding calls
          * `unreadNotifications()` for any signed-in user, so a missing table is a
          * 500 on every portal page rather than a feature that is merely absent.

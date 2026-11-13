@@ -5,8 +5,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * The public site: published events, the footer pages and social links the
- * office manages, and nothing a participant should not see.
+ * The public site: published events, and nothing a participant should not see.
  */
 it('lists published events for anyone, upcoming first, and never a draft or a lot count', function () {
     Event::factory()->create(['title' => 'Draft Fair', 'status' => 'draft']);

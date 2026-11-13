@@ -43,16 +43,6 @@ return [
             'AutoFormat.AutoParagraph' => false,
             'AutoFormat.RemoveEmpty'   => true,
         ],
-        // Footer menu panel content: a contenteditable editor using execCommand
-        // (bold/italic/insertUnorderedList/createLink), so its output tag set differs from
-        // the FAQ profile above — it needs b/i/a[href] and browser-inserted div/p wrappers.
-        'footer_menu' => [
-            'HTML.Doctype'             => 'HTML 4.01 Transitional',
-            'HTML.Allowed'             => 'p,div,b,strong,i,em,u,ul,ol,li,br,a[href|title]',
-            'CSS.AllowedProperties'    => '',
-            'AutoFormat.AutoParagraph' => false,
-            'AutoFormat.RemoveEmpty'   => true,
-        ],
         "youtube" => [
             "HTML.SafeIframe"      => 'true',
             "URI.SafeIframeRegexp" => "%^(http://|https://|//)(www.youtube.com/embed/|player.vimeo.com/video/)%",
