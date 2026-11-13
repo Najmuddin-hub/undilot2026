@@ -521,6 +521,40 @@ Dua perkara yang menggigit dan kini dikunci ujian:
   **hilang tanpa sebarang amaran**. Slug pertama menang; yang kemudian membawa
   `legacy_id`.
 
+### `legacy:emails` — satu-satunya pintu kepada penggunaan sebenar
+
+Dump **tiada lajur email dan tiada lajur telefon** — bukan kosong, tetapi tiada.
+Pesertanya tidak pernah log masuk; hanya pegawai, dengan `loginname`. Jadi
+175 peserta import terkunci sepenuhnya, dengan sengaja: kata laluan rawak dan
+alamat pada `legacy.test` yang tidak boleh terima mel.
+
+`legacy:emails <fail.csv>` memberi mereka alamat sebenar, dan **sebaik alamat
+itu benar, aliran Lupa Kata Laluan biasa mula berfungsi**. Arahan ini **tidak
+menetapkan dan tidak menghantar kata laluan** — peserta membuktikan alamat itu
+miliknya dengan menggunakannya.
+
+**Dipadan pada IC**, diukur: merentas 175 peserta, IC unik 175 cara, tidak
+pernah kosong, dan **kekal unik selepas dinormalkan kepada digit** — yang wajib,
+kerana dump menulis kedua-dua `890508-12-0000` dan `800601100000`.
+`community_id` **tidak boleh** jadi kunci sendiri: ia unik 173 cara sahaja dan
+satu baris tiada.
+
+**Selamat di pelayan**, tidak seperti `legacy:accounts`: ia tidak menanam akaun
+dan tidak tahu sebarang kata laluan; ia memindahkan alamat ke baris yang sudah
+ada. Ia enggan menyentuh peserta yang sudah ada alamat sebenar melainkan
+`--replace`.
+
+Dua perkara yang dikunci ujian:
+
+- **Seluruh fail dirancang sebelum satu baris ditulis.** Fail yang memberi satu
+  alamat kepada dua orang menggugurkan **kedua-dua** baris, bukan menerima yang
+  pertama — tiada apa dalam fail itu menyatakan yang mana pejabat maksudkan,
+  jadi menerima yang pertama bermakna menulis lambungan syiling ke dalam
+  identiti seseorang.
+- **Disimpan melalui model, bukan query builder**, supaya `Auditable` merekod
+  siapa menukar alamat siapa dan dari apa. Kata laluan dikecualikan daripada
+  jejak itu dan mesti kekal dikecualikan.
+
 ### Zon lama **mesti** diterjemah, tidak boleh disimpan mentah
 
 `App\Support\LegacyZones` memetakan nama zon lama kepada zon undilot. Ia bukan
