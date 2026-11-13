@@ -529,18 +529,25 @@ return new class extends Migration
 
         /**
          * A landing strip for the old system's dump. Nothing here is application
-         * data: these three tables hold the office's MySQL 4-era tables verbatim
-         * so an import can be re-run without asking the office for the files
-         * again, and so a wrong mapping costs a re-transform rather than a
-         * re-export.
+         * data: these three tables hold the columns of the office's MySQL 4-era
+         * tables that the import actually uses, so a wrong mapping costs a
+         * re-transform rather than another export request.
+         *
+         * NOT EVERY COLUMN, AND THAT IS DELIBERATE. The dump has 64 tables and
+         * 21,032 rows, and the fill rate of each column was measured against it
+         * rather than guessed. Twenty-one columns were left out (2 + 13 + 6): some are 0%
+         * filled in all 21,032 rows, some hold a single repeated value, and some
+         * the office stopped capturing a decade ago. Each table below says which
+         * and why. `kraf_lama.sql` itself is the archive, so narrowing these
+         * tables loses nothing — a later historical import re-reads the file.
          *
          * FIVE RULES, and the first is the one that matters:
          *
          * 1. EVERY DATA COLUMN IS A NULLABLE STRING. Not a convenience — the
-         *    dump cannot be stored any other way on this MySQL. `usahawan` and
-         *    `upengawai` declare `lastlogin`, `votetime` and `votetimepay` as
-         *    `datetime NOT NULL` with no default, which on MySQL 4/5 means
-         *    "never" was written as `0000-00-00 00:00:00`. This server runs
+         *    dump cannot be stored any other way on this MySQL. `usahawan`
+         *    declares `votetime` as `datetime NOT NULL` with no default, which on
+         *    MySQL 4/5 means "never" was written as `0000-00-00 00:00:00` — and
+         *    45% of the snapshot rows carry exactly that. This server runs
          *    `sql_mode = STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE`, which
          *    REJECTS that value for a date column outright. `prio` has the same
          *    shape of problem: an `int` column in a dump that may hold ''.
@@ -548,9 +555,8 @@ return new class extends Migration
          *
          * 2. COLUMN NAMES ARE THE LEGACY NAMES, LOWERCASED, and nothing else.
          *    One rule, so the load needs no per-column mapping and an audit is a
-         *    diff rather than a judgement. That is why `userright`, `loginname`,
-         *    `sessionid` and `protokol` read oddly: they are `UserRight`,
-         *    `LoginName`, `sessionID` and `Protokol` in the dump.
+         *    diff rather than a judgement. That is why `userright` and `loginname`
+         *    read oddly: they are `UserRight` and `LoginName` in the dump.
          *
          * 3. `legacy_id` KEEPS THE ORIGINAL `id`. Without it the links between
          *    the old tables cannot be rebuilt: `ukhemah.usahawanid` points at
@@ -610,10 +616,15 @@ return new class extends Migration
             $table->string('userright', 100)->nullable();
             $table->string('loginname', 100)->nullable();
             $table->string('state', 100)->nullable();
-            $table->string('sessionid', 100)->nullable();
-            $table->string('lastlogin', 25)->nullable();
             $table->string('ic', 100)->nullable();
             $table->string('jawatan', 100)->nullable();
+
+            // DROPPED, measured over all 137 rows of every `upengawai*` table:
+            // `sessionID` and `lastlogin` are 0% filled — the old app wrote
+            // neither. `userright` is kept although it holds ONE value across
+            // every row ('Pengawai'), because that single value is the answer to
+            // "which role does this officer get": the old system had none, so
+            // admin/hq/super has to be assigned here, not migrated.
 
             $table->timestamp('imported_at')->nullable();
 
@@ -652,30 +663,44 @@ return new class extends Migration
              */
             $table->string('name', 200)->nullable();
             $table->string('ic', 20)->nullable();
-            $table->string('address', 200)->nullable();
-            $table->string('postcode', 10)->nullable();
-            $table->string('region', 20)->nullable();
             $table->string('state', 20)->nullable();
             $table->string('companyname', 100)->nullable();
-            $table->string('register', 20)->nullable();
             $table->string('crafttype', 100)->nullable();
-            $table->string('category', 80)->nullable();
-            $table->string('sstatus', 10)->nullable();
-            $table->string('sstatusexport', 10)->nullable();
-            $table->string('payment', 20)->nullable();
             $table->string('lot', 10)->nullable();
             $table->string('location', 20)->nullable();
             $table->string('votetime', 25)->nullable();
             $table->string('bidang', 30)->nullable();
-            $table->string('subcrafttype', 50)->nullable();
             $table->string('salu', 20)->nullable();
-            $table->string('bayarstatus', 10)->nullable();
-            $table->string('protokol', 10)->nullable();
             $table->string('preset', 10)->nullable();
-            $table->string('undi', 10)->nullable();
             $table->string('comid', 10)->nullable();
             $table->string('byuser', 11)->nullable();
-            $table->string('votetimepay', 25)->nullable();
+
+            /*
+             * DROPPED ELEVEN COLUMNS, measured not assumed. Fill rate over the
+             * 175 rows of the live `usahawan` — the AACB event, the only one
+             * whose participants survive:
+             *
+             *   subcrafttype, votetimepay   0% HERE AND IN EVERY SNAPSHOT.
+             *                               `votetimepay` is '0000-00-00' in all
+             *                               20,000-odd rows; it was never used.
+             *   address, postcode, region   0% live, 92-97% in the 2011/2012
+             *   register, category          snapshots. The office STOPPED
+             *   payment, sstatus,           capturing these. They are real data
+             *   sstatusexport, protokol     for historical rows and nothing for
+             *                               the import we are doing.
+             *
+             * `bayarstatus` and `undi` are dropped too, for the opposite reason:
+             * 100% filled but ONE distinct value each ('Ya', 'Yes'). A column
+             * that never varies carries no row-level fact. What they mean —
+             * every AACB participant had paid and had confirmed — belongs in the
+             * transform, which sets `confirmed_participation` and writes a
+             * payment note, not in a column repeating one word 175 times.
+             *
+             * THE DUMP FILE IS THE ARCHIVE, which is what makes this safe.
+             * Nothing is lost by narrowing the table: a later historical import
+             * re-reads `kraf_lama.sql` and widens the schema then, with the
+             * office's answers about events in hand.
+             */
 
             $table->timestamp('imported_at')->nullable();
 
@@ -718,18 +743,23 @@ return new class extends Migration
              * are the ones with `prio = 6`.
              */
             $table->string('khemah', 100)->nullable();
-            $table->string('typeitem', 100)->nullable();
             $table->string('usahawanid', 11)->nullable();
             $table->string('boothid', 10)->nullable();
-            $table->string('subtypeitem', 100)->nullable();
             $table->string('bidang', 100)->nullable();
             $table->string('crafttype', 100)->nullable();
-            $table->string('category', 100)->nullable();
-            $table->string('sstatusexport', 100)->nullable();
-            $table->string('sstatus', 100)->nullable();
-            $table->string('protokol', 100)->nullable();
             $table->string('prio', 20)->nullable();
             $table->string('event', 100)->nullable();
+
+            /*
+             * DROPPED SIX. Fill rate over the live `ukhemah` (175 booths, event
+             * AACB): `typeitem`, `subtypeitem`, `category`, `sstatusexport`,
+             * `sstatus` and `protokol` are ALL 0%. Across every `ukhemah*` table
+             * they reach 3-17%, entirely in the 2011/2012 rows.
+             *
+             * `prio` is kept even though the live table holds one value for all
+             * 175 rows, because it varies in the older plans (five values) and
+             * it is what tells a reserved booth from an ordinary one.
+             */
 
             $table->timestamp('imported_at')->nullable();
 

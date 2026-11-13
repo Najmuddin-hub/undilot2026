@@ -454,6 +454,41 @@ pertama; `boothid` lama (`KH01`, `PS05`) tidak mengikut senarai kod.
 
 `salu` ialah **kata panggilan** (`Puan`), bukan status.
 
+### Hanya lajur yang dipakai, diukur bukan diteka
+
+Dump penuh (`kraf_lama.sql`, 8.2MB, **64 jadual, 21,032 baris** — diabaikan git
+kerana ia mengandungi nama, IC dan alamat, dan repo ini awam) diukur isian
+setiap lajur. **21 lajur ditinggalkan** (2 + 13 + 6): ada yang 0% dalam
+kesemua 21,032 baris, ada yang 100% tetapi satu nilai berulang, dan ada yang
+pejabat berhenti merekod sedekad lalu. Fail dump itu sendiri ialah arkib, jadi
+menyempitkan jadual staging tidak menghilangkan apa-apa.
+
+### Empat fakta dump yang menentukan skop import
+
+1. **`upengawai.UserRight` ada SATU nilai** — `Pengawai`, merentas 137 baris
+   semua versi. Sistem lama **tiada peranan**, jadi `admin`/`hq`/`super`
+   mesti **ditetapkan**, bukan dimigrasi.
+2. **Tiada jadual acara.** `syatemconfiguration` cuma konfigurasi aplikasi lama
+   (Clipsoft 2007). Identiti acara hanya ada pada **nama jadual**, plus tiga kod
+   dalam lajur `event`: `AACB` (jadual hidup), `FKJ`, `HKK`. Tiada tajuk, tiada
+   tarikh — semua yang `events` perlukan.
+3. **21% peruntukan rosak.** 6,842 peruntukan gerai; **1,464** menunjuk kepada
+   `usahawanid` yang tiada dalam mana-mana jadual `usahawan*`. `usahawan` ialah
+   jadual kerja, bukan arkib: yang hidup ada id 204–381, baris 1–203 sudah
+   dipadam. HKK 2022/2023/2024 dan FKJ 2023 kehilangan **semua** pesertanya.
+4. **`crafttype` berkod hanya 11%** — 2,201 baris ada `-KOD-SAIZ`, 18,218 nama
+   kosong tanpa kod dan tanpa saiz.
+
+Jadi **import `AACB` sahaja**: 175 peserta, 174 peruntukan, pasangan hidup
+lengkap, dan satu-satunya data yang membawa kod kraf serta saiz. Sejarah
+2011–2024 kekal dalam fail dump, bukan dipaksa menjadi `events`.
+
+Satu amaran tentang pautan: semakan "id ini ada dalam **mana-mana** jadual
+`usahawan*`" kuat untuk membuktikan ketiadaan, **lemah** untuk membuktikan
+kehadiran — id ialah integer kecil yang diguna semula merentas jadual. Hanya
+pasangan bernama sama (`ukhemah_day1_2pm` ↔ `usahawan_day1_2pm`) boleh
+dipercayai.
+
 ### Pembersihan yang data sebenar sudah tunjukkan perlu
 
 - **Ruang hujung**: `boothid` `'TBA06 '`, `comid` `'10-1-62  '`, `'14-1-14   '`.

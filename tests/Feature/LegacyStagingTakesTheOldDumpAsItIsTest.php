@@ -30,9 +30,7 @@ it('declares every staging data column as a string, never a date or an integer',
 
     $mustBeString = [
         // datetime NOT NULL in the dump, holding '0000-00-00 00:00:00' for "never".
-        ['legacy_upengawai', 'lastlogin'],
         ['legacy_usahawan', 'votetime'],
-        ['legacy_usahawan', 'votetimepay'],
         // int in the dump, and an int column refuses '' under STRICT_TRANS_TABLES.
         ['legacy_ukhemah', 'prio'],
         // The original id, kept as text for the same reason.
@@ -60,24 +58,18 @@ it('mirrors each legacy table column for column, lowercased, plus its provenance
     $expected = [
         'legacy_upengawai' => [
             'id', 'legacy_id', 'source_table',
-            'name', 'password', 'userright', 'loginname', 'state', 'sessionid',
-            'lastlogin', 'ic', 'jawatan',
+            'name', 'password', 'userright', 'loginname', 'state', 'ic', 'jawatan',
             'imported_at',
         ],
         'legacy_usahawan' => [
             'id', 'legacy_id', 'source_table',
-            'name', 'ic', 'address', 'postcode', 'region', 'state', 'companyname',
-            'register', 'crafttype', 'category', 'sstatus', 'sstatusexport',
-            'payment', 'lot', 'location', 'votetime', 'bidang', 'subcrafttype',
-            'salu', 'bayarstatus', 'protokol', 'preset', 'undi', 'comid',
-            'byuser', 'votetimepay',
+            'name', 'ic', 'state', 'companyname', 'crafttype', 'lot', 'location',
+            'votetime', 'bidang', 'salu', 'preset', 'comid', 'byuser',
             'imported_at',
         ],
         'legacy_ukhemah' => [
             'id', 'legacy_id', 'source_table',
-            'khemah', 'typeitem', 'usahawanid', 'boothid', 'subtypeitem',
-            'bidang', 'crafttype', 'category', 'sstatusexport', 'sstatus',
-            'protokol', 'prio', 'event',
+            'khemah', 'usahawanid', 'boothid', 'bidang', 'crafttype', 'prio', 'event',
             'imported_at',
         ],
     ];
@@ -95,67 +87,44 @@ it('mirrors each legacy table column for column, lowercased, plus its provenance
 });
 
 it('stores a zero date and an empty string in every column, because that is what the dump holds', function () {
-    // `usahawan` is the worst case: 26 data columns, not one of them nullable in
-    // the source, two of them zero dates.
+    // Not one column of the source was nullable, so every absent value in the
+    // dump is '' — and `votetime` is the column that proves the typing decision:
+    // 45% of the snapshot rows hold '0000-00-00 00:00:00' there.
     DB::table('legacy_usahawan')->insert([
         'legacy_id' => '1',
         'source_table' => 'usahawan',
         'name' => '',
         'ic' => '',
-        'address' => '',
-        'postcode' => '',
-        'region' => '',
         'state' => '',
         'companyname' => '',
-        'register' => '',
         'crafttype' => '',
-        'category' => '',
-        'sstatus' => '',
-        'sstatusexport' => '',
-        'payment' => '',
         'lot' => '',
         'location' => '',
         'votetime' => '0000-00-00 00:00:00',
         'bidang' => '',
-        'subcrafttype' => '',
         'salu' => '',
-        'bayarstatus' => '',
-        'protokol' => '',
         'preset' => '',
-        'undi' => '',
         'comid' => '',
         'byuser' => '',
-        'votetimepay' => '0000-00-00 00:00:00',
         'imported_at' => now(),
     ]);
 
     $row = DB::table('legacy_usahawan')->where('legacy_id', '1')->first();
 
     expect($row->votetime)->toBe('0000-00-00 00:00:00');
-    expect($row->votetimepay)->toBe('0000-00-00 00:00:00');
     expect($row->name)->toBe('');
-
-    DB::table('legacy_upengawai')->insert([
-        'legacy_id' => '1',
-        'source_table' => 'upengawai',
-        'lastlogin' => '0000-00-00 00:00:00',
-        'imported_at' => now(),
-    ]);
-
-    expect(DB::table('legacy_upengawai')->value('lastlogin'))->toBe('0000-00-00 00:00:00');
 });
 
-it('takes a half-filled row, because ukhemah10 carries only six of the fourteen columns', function () {
-    // Every data column nullable is what makes one staging table able to hold
-    // all fifteen `ukhemah*` shapes at once.
+it('takes a half-filled row, because ukhemah10 is a narrower table than the rest', function () {
+    // Every data column nullable is what lets one staging table hold all the
+    // `ukhemah*` shapes at once. `ukhemah10` stops after `subtypeitem`, so the
+    // columns this import keeps from beyond that point arrive empty.
     DB::table('legacy_ukhemah')->insert([
         'legacy_id' => '7',
         'source_table' => 'ukhemah10',
         'khemah' => 'A',
-        'typeitem' => 'B',
         'usahawanid' => '1234',
         'boothid' => 'A-01',
-        'subtypeitem' => 'C',
         'imported_at' => now(),
     ]);
 
@@ -164,7 +133,10 @@ it('takes a half-filled row, because ukhemah10 carries only six of the fourteen 
     expect($row->boothid)->toBe('A-01');
     expect($row->bidang)->toBeNull();
     expect($row->prio)->toBeNull();
-    expect($row->event)->toBeNull('Only the live `ukhemah` names an event; the snapshots do not.');
+
+    // Only three of the dump's `ukhemah*` tables carry `event` at all: the live
+    // one (AACB), `ukhemah_fkj2024` (FKJ) and `ukhemah_masterdata` (HKK).
+    expect($row->event)->toBeNull();
 });
 
 it('keeps two rows that share a legacy id, because the snapshots repeat every row', function () {
