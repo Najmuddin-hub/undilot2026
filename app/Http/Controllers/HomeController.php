@@ -55,8 +55,9 @@ class HomeController extends Controller
             'event' => $event,
             'company' => $company,
             'onList' => $company && $event->registrations()->announced()->where('company_id', $company->id)->exists(),
-            // Put on the list by the office, waiting for HQ. Reads
-            // event_registrations only — nothing here is a join request.
+            // Put on the list by the office, waiting for HQ to verify. The only
+            // waiting state there is: a participant cannot ask to join, so
+            // this is the whole of "something is happening, sit tight".
             'beingAdded' => $company && $event->registrations()->whereNull('first_verified_at')->where('company_id', $company->id)->exists(),
         ]);
     }

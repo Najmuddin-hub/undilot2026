@@ -151,8 +151,8 @@ class EntRegistrationController extends Controller
     }
 
     /**
-     * Put one company on the draw list. Shared by the office's own add and by
-     * approving a join request, so both write the same row.
+     * Put one company on the draw list. The one way a company enters a draw:
+     * the office adds it, and HQ's verification is what tells the participant.
      *
      * A company cannot be in the same draw twice — there is a unique index
      * saying so. firstOrCreate makes a double submit harmless rather than a 500.
