@@ -489,6 +489,38 @@ kehadiran — id ialah integer kecil yang diguna semula merentas jadual. Hanya
 pasangan bernama sama (`ukhemah_day1_2pm` ↔ `usahawan_day1_2pm`) boleh
 dipercayai.
 
+### Dua arahan: `import:legacy` dan `legacy:accounts`
+
+`import:legacy <fail.sql>` memuatkan dump ke tiga jadual staging dan **tidak
+memutuskan apa-apa** — ia menyalin teks dan melaporkan apa yang dilihatnya.
+`--dry-run`, `--append`, `--only=<prefiks>`. Pada dump penuh: 21,031 baris dalam
+5.7 detik, sifar kegagalan.
+
+`App\Support\LegacyDump` **memburu statement `insert`**, bukan memecah fail pada
+`;`. Memecah pada `;` nampak betul dan tidak: export ini memotong setiap
+`CREATE TABLE` di tengah definisi **tanpa koma bertitik**, jadi pembaca
+`;` melekatkan CREATE yang rosak pada INSERT selepasnya dan baris itu hilang
+senyap. Komen SQL antara statement buat perkara sama. Itu satu larian ujian
+penuh untuk disedari.
+
+`legacy:accounts` (local/testing/e2e sahaja) membina akaun log masuk daripada
+staging: pegawai pertama jadi super, kedua jadi hq, dan setiap zon dalam dump
+dapat satu admin negeri — **peranan ditetapkan, bukan dimigrasi**, kerana
+`UserRight` hanya ada satu nilai. Peserta AACB jadi `users` + `companies`, dengan
+`kraf_code` dan `plot_size` dihurai dari `crafttype` (pecah dari **kanan**).
+
+Dua perkara yang menggigit dan kini dikunci ujian:
+
+- **Domainnya `legacy.test`, bukan `demo.test`.** `--fresh` memadam ikut domain,
+  dan `DemoSeeder` menanam akaunnya pada `demo.test`. Berkongsi domain bermakna
+  `--fresh` memadam data demo juga — yang memang berlaku sebelum ini.
+- **Dua pegawai berkongsi satu `loginname`** (id 5 dan 25, kedua-duanya
+  `haida`). `updateOrCreate` pada email bertembung **tidak gagal** — ia mengemas
+  kini baris pegawai pertama, jadi yang kedua merampas peranan yang sudah
+  diberi. Pada dump sebenar: 17 admin dibina, 16 baris wujud, dan admin hq
+  **hilang tanpa sebarang amaran**. Slug pertama menang; yang kemudian membawa
+  `legacy_id`.
+
 ### Pembersihan yang data sebenar sudah tunjukkan perlu
 
 - **Ruang hujung**: `boothid` `'TBA06 '`, `comid` `'10-1-62  '`, `'14-1-14   '`.
