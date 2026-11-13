@@ -48,7 +48,7 @@ class LegacyAccounts extends Command
      * delete the demo data too — which it did, until a run against the real
      * dump showed both sets of accounts answering to the same LIKE.
      */
-    private const MAIL_DOMAIN = 'legacy.test';
+    public const MAIL_DOMAIN = 'legacy.test';
 
     public function handle(): int
     {

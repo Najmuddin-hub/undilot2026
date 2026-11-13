@@ -521,6 +521,37 @@ Dua perkara yang menggigit dan kini dikunci ujian:
   **hilang tanpa sebarang amaran**. Slug pertama menang; yang kemudian membawa
   `legacy_id`.
 
+### `legacy:transform-aacb` membina satu acara, bukan sejarah
+
+Ia membina acara AACB penuh daripada staging: pelan (4 pasangan lokasi/saiz),
+175 plot, 174 pendaftaran, 174 preset dan 174 undi. Silang-semak terhadap dump
+lulus kesemuanya — `plot_code` dari dump, plot padan `usahawan.lot`, kod
+pendaftaran = kod plot, tiada plot ditanda kategori, tiada baris belum disahkan.
+
+Keputusan yang dibuat di sini dan sebabnya:
+
+- **`plot_code` ialah `boothid` pejabat**, bukan `Plot::codeFor()`. Pejabat
+  tulis `TBP01`; penjana akan tulis `BASEMENT-TBP1`. `usahawan.lot` padan dengan
+  `boothid` pada **kesemua 174** peruntukan, dan id itulah yang dicetak pada
+  gerai dan slip.
+- **`use_preset` dan `allocation_type = 'preset'`**, kerana `lot` = `preset`
+  pada kesemua 175 baris: pejabat menetapkan setiap gerai, peserta mengesahkan.
+  Membina semula seolah-olah algoritma yang menjalankannya ialah acara lain.
+- **Setiap pendaftaran ditulis `verified_at`**, kerana cabutan itu **selesai**.
+  `PollingGuard` menahan cabutan selagi ada baris belum disahkan, jadi acara
+  yang sampai ke penghujung sudah melalui kedua-dua semakan.
+- **Tetingkap cabutan dibaca dari `votetime`** (2025-10-06 10:02 → 13:54), bukan
+  direka. **Tajuk, tempat dan tarikh acara pula tiada dalam dump** — pilihan
+  arahan membekalkannya dan laporan menyatakan yang mana tekaan.
+- **Pemangkasan ruang berlaku di sini**, bukan di staging. `'RKP01 '` jadi
+  `'RKP01'`; staging menyimpannya utuh kerana membersih ialah keputusan.
+- Arahan **berhenti** jika ada kod kraf tiada pada helaian pengekodan — plot
+  dengan kod tak dikenali tidak boleh dipadankan oleh mana-mana pendaftaran.
+
+`--fresh` membuang pendaftaran **dahulu**, kemudian acara: `plot_id` tiada
+klausa `ON DELETE`, jadi pangkalan data menyekat pembuangan plot yang masih
+ditunjuk.
+
 ### Pembersihan yang data sebenar sudah tunjukkan perlu
 
 - **Ruang hujung**: `boothid` `'TBA06 '`, `comid` `'10-1-62  '`, `'14-1-14   '`.
