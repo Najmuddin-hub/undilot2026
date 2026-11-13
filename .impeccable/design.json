@@ -1,0 +1,1178 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-10T12:00:00+08:00",
+  "title": "Design System: undilot",
+  "extensions": {
+    "colorMeta": {
+      "navy-950": {
+        "role": "tertiary",
+        "displayName": "Night Navy",
+        "canonical": "#071a33",
+        "tonalRamp": [
+          "#000a22",
+          "#11243e",
+          "#2c415d",
+          "#495f7d",
+          "#687f9e",
+          "#88a0c1",
+          "#b0c9ec",
+          "#e6effc"
+        ]
+      },
+      "navy-900": {
+        "role": "tertiary",
+        "displayName": "Service Navy",
+        "canonical": "#0b2240",
+        "tonalRamp": [
+          "#000925",
+          "#0d2442",
+          "#294161",
+          "#465f81",
+          "#647fa3",
+          "#85a0c6",
+          "#adcaf1",
+          "#e5effe"
+        ]
+      },
+      "navy-800": {
+        "role": "tertiary",
+        "displayName": "Navy 800",
+        "canonical": "#12305a",
+        "tonalRamp": [
+          "#00062d",
+          "#05224b",
+          "#21406b",
+          "#3f5e8c",
+          "#5d7faf",
+          "#7ea0d2",
+          "#a5cafe",
+          "#e3f0ff"
+        ]
+      },
+      "navy-700": {
+        "role": "tertiary",
+        "displayName": "Active Navy",
+        "canonical": "#1b3f70",
+        "tonalRamp": [
+          "#000431",
+          "#002250",
+          "#1b3f70",
+          "#395e92",
+          "#587fb5",
+          "#78a0d9",
+          "#a0caff",
+          "#e1f0ff"
+        ]
+      },
+      "on-navy": {
+        "role": "neutral",
+        "displayName": "On Navy",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#7d7d7d",
+          "#9e9e9e",
+          "#c7c7c7",
+          "#eeeeee"
+        ]
+      },
+      "on-navy-2": {
+        "role": "neutral",
+        "displayName": "On Navy Muted",
+        "canonical": "#b9c6d8",
+        "tonalRamp": [
+          "#040b17",
+          "#1b2532",
+          "#36414f",
+          "#535f6e",
+          "#727e8f",
+          "#93a0b1",
+          "#bbc9db",
+          "#eaeff5"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Cool Ground",
+        "canonical": "#f3f5f8",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#232426",
+          "#3e4042",
+          "#5c5e60",
+          "#7c7d80",
+          "#9d9ea1",
+          "#c5c7ca",
+          "#eeeeef"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "White Surface",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#7d7d7d",
+          "#9e9e9e",
+          "#c7c7c7",
+          "#eeeeee"
+        ]
+      },
+      "surface-2": {
+        "role": "neutral",
+        "displayName": "Wash",
+        "canonical": "#f8fafc",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#232426",
+          "#3e4041",
+          "#5c5e5f",
+          "#7c7d7f",
+          "#9d9fa0",
+          "#c5c7c9",
+          "#eeeeef"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#dce1e8",
+        "tonalRamp": [
+          "#080b10",
+          "#212429",
+          "#3c4046",
+          "#5a5e64",
+          "#797e84",
+          "#9a9fa5",
+          "#c3c8cf",
+          "#edeff1"
+        ]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Control Hairline",
+        "canonical": "#c3ccd8",
+        "tonalRamp": [
+          "#060b13",
+          "#1e252d",
+          "#39404a",
+          "#565e69",
+          "#767e89",
+          "#979fab",
+          "#bfc8d4",
+          "#ebeff3"
+        ]
+      },
+      "sep": {
+        "role": "neutral",
+        "displayName": "Row Separator",
+        "canonical": "#e9edf2",
+        "tonalRamp": [
+          "#090b0f",
+          "#212428",
+          "#3d4044",
+          "#5b5e62",
+          "#7a7e82",
+          "#9b9fa3",
+          "#c4c8cc",
+          "#edeef0"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#101828",
+        "tonalRamp": [
+          "#050b19",
+          "#1b2435",
+          "#364052",
+          "#545e71",
+          "#737e92",
+          "#939fb4",
+          "#bcc8de",
+          "#eaeff7"
+        ]
+      },
+      "text-2": {
+        "role": "neutral",
+        "displayName": "Ink Secondary",
+        "canonical": "#344054",
+        "tonalRamp": [
+          "#030b1b",
+          "#192437",
+          "#344054",
+          "#515e74",
+          "#707e94",
+          "#919fb7",
+          "#b9c8e1",
+          "#e9eff8"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "#586477",
+        "tonalRamp": [
+          "#040b19",
+          "#1a2434",
+          "#354052",
+          "#525e71",
+          "#727e92",
+          "#929fb4",
+          "#bbc8de",
+          "#eaeff7"
+        ]
+      },
+      "blue": {
+        "role": "primary",
+        "displayName": "Action Blue",
+        "canonical": "#1a56db",
+        "tonalRamp": [
+          "#05004d",
+          "#000f6f",
+          "#0b3592",
+          "#2956b6",
+          "#4878db",
+          "#689bff",
+          "#8fc5ff",
+          "#dbefff"
+        ]
+      },
+      "blue-hover": {
+        "role": "primary",
+        "displayName": "Action Blue Hover",
+        "canonical": "#1546b3",
+        "tonalRamp": [
+          "#05004d",
+          "#000f6f",
+          "#0b3592",
+          "#2a56b6",
+          "#4878db",
+          "#689bff",
+          "#8fc5ff",
+          "#dbefff"
+        ]
+      },
+      "blue-press": {
+        "role": "primary",
+        "displayName": "Action Blue Press",
+        "canonical": "#103a96",
+        "tonalRamp": [
+          "#04004c",
+          "#00106e",
+          "#0c3591",
+          "#2a57b5",
+          "#4979da",
+          "#689bff",
+          "#90c5ff",
+          "#dbefff"
+        ]
+      },
+      "blue-tint": {
+        "role": "primary",
+        "displayName": "Blue Tint",
+        "canonical": "#ebf1fd",
+        "tonalRamp": [
+          "#080b13",
+          "#20242d",
+          "#3b4049",
+          "#595e68",
+          "#787d88",
+          "#999faa",
+          "#c2c7d3",
+          "#eceef3"
+        ]
+      },
+      "blue-text": {
+        "role": "primary",
+        "displayName": "Blue Text",
+        "canonical": "#1546b3",
+        "tonalRamp": [
+          "#05004d",
+          "#000f6f",
+          "#0b3592",
+          "#2a56b6",
+          "#4878db",
+          "#689bff",
+          "#8fc5ff",
+          "#dbefff"
+        ]
+      },
+      "gold": {
+        "role": "secondary",
+        "displayName": "Kraftangan Gold",
+        "canonical": "#e3a92b",
+        "tonalRamp": [
+          "#260000",
+          "#451100",
+          "#653100",
+          "#865100",
+          "#a97100",
+          "#cc9300",
+          "#f7bc45",
+          "#ffecc8"
+        ]
+      },
+      "gold-tint": {
+        "role": "secondary",
+        "displayName": "Gold Tint",
+        "canonical": "#fdf5e1",
+        "tonalRamp": [
+          "#100a01",
+          "#292314",
+          "#463f2f",
+          "#645d4c",
+          "#847d6b",
+          "#a59e8b",
+          "#cec7b4",
+          "#f1eee7"
+        ]
+      },
+      "gold-text": {
+        "role": "secondary",
+        "displayName": "Gold Text",
+        "canonical": "#7a5300",
+        "tonalRamp": [
+          "#200000",
+          "#3d1900",
+          "#5c3700",
+          "#7c5504",
+          "#9e7531",
+          "#c19654",
+          "#ebbf7c",
+          "#fcecd5"
+        ]
+      },
+      "ok": {
+        "role": "neutral",
+        "displayName": "Success",
+        "canonical": "#12804a",
+        "tonalRamp": [
+          "#001600",
+          "#003301",
+          "#00511f",
+          "#00713c",
+          "#2e935b",
+          "#55b57c",
+          "#80dfa3",
+          "#d8f8e2"
+        ]
+      },
+      "ok-tint": {
+        "role": "neutral",
+        "displayName": "Success Tint",
+        "canonical": "#e6f4ec",
+        "tonalRamp": [
+          "#050e09",
+          "#1c2721",
+          "#38433d",
+          "#55615a",
+          "#74817a",
+          "#95a29b",
+          "#becbc3",
+          "#ebf0ed"
+        ]
+      },
+      "ok-text": {
+        "role": "neutral",
+        "displayName": "Success Text",
+        "canonical": "#0b6239",
+        "tonalRamp": [
+          "#001500",
+          "#00310b",
+          "#004f27",
+          "#1e6e44",
+          "#438f63",
+          "#66b183",
+          "#8fdbab",
+          "#dcf6e5"
+        ]
+      },
+      "warn": {
+        "role": "neutral",
+        "displayName": "Warning",
+        "canonical": "#d98a00",
+        "tonalRamp": [
+          "#2c0000",
+          "#4d0000",
+          "#6f2700",
+          "#914800",
+          "#b56900",
+          "#d98a01",
+          "#ffb449",
+          "#ffe9c9"
+        ]
+      },
+      "warn-tint": {
+        "role": "neutral",
+        "displayName": "Warning Tint",
+        "canonical": "#fdf2df",
+        "tonalRamp": [
+          "#110a01",
+          "#2b2314",
+          "#473e2f",
+          "#665c4c",
+          "#867c6b",
+          "#a79d8b",
+          "#d1c6b4",
+          "#f2eee7"
+        ]
+      },
+      "warn-text": {
+        "role": "neutral",
+        "displayName": "Warning Text",
+        "canonical": "#7f4500",
+        "tonalRamp": [
+          "#260000",
+          "#460f00",
+          "#662e00",
+          "#884d0e",
+          "#ab6d36",
+          "#ce8e57",
+          "#fab780",
+          "#ffe9d6"
+        ]
+      },
+      "bad": {
+        "role": "neutral",
+        "displayName": "Danger",
+        "canonical": "#c4320a",
+        "tonalRamp": [
+          "#360000",
+          "#5b0000",
+          "#7f0000",
+          "#a42d10",
+          "#ca5136",
+          "#f17457",
+          "#ff9e7f",
+          "#ffe2d6"
+        ]
+      },
+      "bad-tint": {
+        "role": "neutral",
+        "displayName": "Danger Tint",
+        "canonical": "#fdece8",
+        "tonalRamp": [
+          "#120806",
+          "#2d211e",
+          "#493c39",
+          "#685a57",
+          "#887976",
+          "#aa9a97",
+          "#d3c3bf",
+          "#f3edeb"
+        ]
+      },
+      "bad-text": {
+        "role": "neutral",
+        "displayName": "Danger Text",
+        "canonical": "#9a2006",
+        "tonalRamp": [
+          "#360000",
+          "#5b0000",
+          "#7f0000",
+          "#a42d15",
+          "#ca5139",
+          "#f1735a",
+          "#ff9d82",
+          "#ffe2d7"
+        ]
+      },
+      "neutral-tint": {
+        "role": "neutral",
+        "displayName": "Neutral Tint",
+        "canonical": "#eef1f5",
+        "tonalRamp": [
+          "#090b0e",
+          "#222427",
+          "#3e4043",
+          "#5b5e61",
+          "#7b7d81",
+          "#9c9fa2",
+          "#c5c7cb",
+          "#edeef0"
+        ]
+      },
+      "neutral-text": {
+        "role": "neutral",
+        "displayName": "Neutral Text",
+        "canonical": "#475467",
+        "tonalRamp": [
+          "#030b1a",
+          "#192435",
+          "#344053",
+          "#515f72",
+          "#707e93",
+          "#91a0b5",
+          "#b9c9df",
+          "#e9eff7"
+        ]
+      },
+      "violet-tint": {
+        "role": "neutral",
+        "displayName": "Violet Tint",
+        "canonical": "#f0edfb",
+        "tonalRamp": [
+          "#0c0a12",
+          "#25222c",
+          "#403e49",
+          "#5e5c67",
+          "#7e7b88",
+          "#9f9ca9",
+          "#c8c5d3",
+          "#efeef2"
+        ]
+      },
+      "violet-text": {
+        "role": "neutral",
+        "displayName": "Violet Text",
+        "canonical": "#5b3fb3",
+        "tonalRamp": [
+          "#150048",
+          "#29006a",
+          "#42258c",
+          "#5e47b0",
+          "#7c69d5",
+          "#9d8bfb",
+          "#c5b4ff",
+          "#ece9ff"
+        ]
+      },
+      "focus": {
+        "role": "neutral",
+        "displayName": "GOV.UK Focus Yellow",
+        "canonical": "#ffdd00",
+        "tonalRamp": [
+          "#1d0200",
+          "#3a1d00",
+          "#573b00",
+          "#775b00",
+          "#977b00",
+          "#ba9d00",
+          "#e3c72e",
+          "#f8f0c5"
+        ]
+      },
+      "focus-ink": {
+        "role": "neutral",
+        "displayName": "Focus Ink",
+        "canonical": "#0b0c0c",
+        "tonalRamp": [
+          "#0a0b0b",
+          "#232424",
+          "#3f4040",
+          "#5c5e5e",
+          "#7c7d7d",
+          "#9d9f9f",
+          "#c6c7c7",
+          "#eeeeee"
+        ]
+      },
+      "on-navy-3": {
+        "role": "neutral",
+        "displayName": "On Navy Item",
+        "canonical": "#d6deea",
+        "tonalRamp": [
+          "#0e131b",
+          "#1f2b3d",
+          "#344865",
+          "#49648e",
+          "#6785b1",
+          "#93a8c8",
+          "#c2cee0",
+          "#ebeff5"
+        ]
+      },
+      "on-navy-soft": {
+        "role": "neutral",
+        "displayName": "On Navy Soft",
+        "canonical": "#c3cedd",
+        "tonalRamp": [
+          "#0f141a",
+          "#212c3b",
+          "#374962",
+          "#4d6789",
+          "#6d87ac",
+          "#97aac4",
+          "#c4cfde",
+          "#ebeff4"
+        ]
+      },
+      "on-navy-icon": {
+        "role": "neutral",
+        "displayName": "On Navy Icon",
+        "canonical": "#93a4bb",
+        "tonalRamp": [
+          "#101419",
+          "#232c38",
+          "#3b4a5e",
+          "#536783",
+          "#7288a6",
+          "#9babc0",
+          "#c7d0dc",
+          "#eceff3"
+        ]
+      },
+      "on-navy-dim": {
+        "role": "neutral",
+        "displayName": "On Navy Dim",
+        "canonical": "#8fa1ba",
+        "tonalRamp": [
+          "#101419",
+          "#232c39",
+          "#3a4a5f",
+          "#526785",
+          "#7188a8",
+          "#9aaac1",
+          "#c6cfdc",
+          "#eceff3"
+        ]
+      },
+      "border-hover": {
+        "role": "neutral",
+        "displayName": "Hairline Hover",
+        "canonical": "#a9b4c3",
+        "tonalRamp": [
+          "#111418",
+          "#262d36",
+          "#3f4a5a",
+          "#58687e",
+          "#7889a1",
+          "#9fabbc",
+          "#c9d0d9",
+          "#edeff2"
+        ]
+      },
+      "row-hover": {
+        "role": "neutral",
+        "displayName": "Row Hover",
+        "canonical": "#f6f9ff",
+        "tonalRamp": [
+          "#000e29",
+          "#001f5c",
+          "#003399",
+          "#0047d6",
+          "#1a66ff",
+          "#5c92ff",
+          "#a3c2ff",
+          "#e0ebff"
+        ]
+      },
+      "blue-tint-2": {
+        "role": "primary",
+        "displayName": "Blue Tint Deep",
+        "canonical": "#d7e3fb",
+        "tonalRamp": [
+          "#040f25",
+          "#082153",
+          "#0e388b",
+          "#134ec3",
+          "#2e6dea",
+          "#6b97f0",
+          "#acc5f7",
+          "#e3ecfc"
+        ]
+      },
+      "blue-border": {
+        "role": "primary",
+        "displayName": "Blue Border",
+        "canonical": "#b6c9f4",
+        "tonalRamp": [
+          "#050f23",
+          "#0c2150",
+          "#143785",
+          "#1c4cba",
+          "#386be1",
+          "#7196ea",
+          "#afc4f3",
+          "#e4ebfb"
+        ]
+      },
+      "blue-border-2": {
+        "role": "primary",
+        "displayName": "Blue Border Strong",
+        "canonical": "#9db8ef",
+        "tonalRamp": [
+          "#060f23",
+          "#0d234f",
+          "#153a84",
+          "#1e51b8",
+          "#3a70df",
+          "#7399e8",
+          "#b0c6f2",
+          "#e5ecfb"
+        ]
+      },
+      "info-border": {
+        "role": "primary",
+        "displayName": "Info Border",
+        "canonical": "#c4d5f8",
+        "tonalRamp": [
+          "#040f24",
+          "#0a2152",
+          "#103889",
+          "#174ebf",
+          "#326de7",
+          "#6d97ee",
+          "#adc5f5",
+          "#e4ecfc"
+        ]
+      },
+      "gold-tint-2": {
+        "role": "secondary",
+        "displayName": "Gold Tint Deep",
+        "canonical": "#fbe7bd",
+        "tonalRamp": [
+          "#261b02",
+          "#573c05",
+          "#906509",
+          "#ca8d0c",
+          "#f2b027",
+          "#f6c765",
+          "#fae0a8",
+          "#fdf5e2"
+        ]
+      },
+      "ok-border": {
+        "role": "neutral",
+        "displayName": "Success Border",
+        "canonical": "#b9e1ca",
+        "tonalRamp": [
+          "#0c1d13",
+          "#1c402b",
+          "#2e6b48",
+          "#409665",
+          "#5eba85",
+          "#8dcea9",
+          "#bfe3ce",
+          "#eaf6ef"
+        ]
+      },
+      "warn-border": {
+        "role": "neutral",
+        "displayName": "Warning Border",
+        "canonical": "#f3d29a",
+        "tonalRamp": [
+          "#241904",
+          "#52370a",
+          "#895c10",
+          "#bf8117",
+          "#e7a432",
+          "#eebe6d",
+          "#f5daad",
+          "#fcf3e4"
+        ]
+      },
+      "warn-border-2": {
+        "role": "neutral",
+        "displayName": "Warning Border Strong",
+        "canonical": "#efc98a",
+        "tonalRamp": [
+          "#241805",
+          "#51370b",
+          "#875b12",
+          "#bc7f1a",
+          "#e3a235",
+          "#ebbd6f",
+          "#f4daae",
+          "#fbf3e4"
+        ]
+      },
+      "bad-border": {
+        "role": "neutral",
+        "displayName": "Danger Border",
+        "canonical": "#f5c3b6",
+        "tonalRamp": [
+          "#240b05",
+          "#51190b",
+          "#872a12",
+          "#bc3b1a",
+          "#e35935",
+          "#eb896f",
+          "#f4bdae",
+          "#fbe9e4"
+        ]
+      },
+      "bad-border-2": {
+        "role": "neutral",
+        "displayName": "Danger Border Strong",
+        "canonical": "#f1b8a8",
+        "tonalRamp": [
+          "#230c06",
+          "#4f1b0d",
+          "#842d15",
+          "#b9401e",
+          "#df5e39",
+          "#e88c72",
+          "#f2beb0",
+          "#fbe9e5"
+        ]
+      },
+      "shade": {
+        "role": "neutral",
+        "displayName": "Shade",
+        "canonical": "rgba(16, 24, 40, 0.14)",
+        "tonalRamp": [
+          "#050b19",
+          "#1b2435",
+          "#364052",
+          "#545e71",
+          "#737e92",
+          "#939fb4",
+          "#bcc8de",
+          "#eaeff7"
+        ]
+      },
+      "scrim": {
+        "role": "neutral",
+        "displayName": "Scrim",
+        "canonical": "rgba(7, 26, 51, 0.72)",
+        "tonalRamp": [
+          "#000a22",
+          "#11243e",
+          "#2c415d",
+          "#495f7d",
+          "#687f9e",
+          "#88a0c1",
+          "#b0c9ec",
+          "#e6effc"
+        ]
+      },
+      "selection": {
+        "role": "primary",
+        "displayName": "Selection Wash",
+        "canonical": "#cfdcfa",
+        "tonalRamp": [
+          "#0b2a73",
+          "#1a3f96",
+          "#3058b5",
+          "#5276cc",
+          "#7b98dc",
+          "#a6bbea",
+          "#cfdcfa",
+          "#eef3fe"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display-sign-in": {
+        "displayName": "Display, sign-in",
+        "purpose": "The sign-in panel title; the one fluid size."
+      },
+      "display": {
+        "displayName": "Display",
+        "purpose": "The public event list's headline and an event page's title; the day on a large date tile."
+      },
+      "headline-portal": {
+        "displayName": "Headline, portal",
+        "purpose": "Participant page title and greeting; 1.5rem under 576px."
+      },
+      "stat": {
+        "displayName": "Stat",
+        "purpose": "Portal stat values and plan reference counts; tabular figures."
+      },
+      "headline-admin": {
+        "displayName": "Headline, admin",
+        "purpose": "Office page title (1.25rem under 768px); sign-in form heading; portal identity name."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "Counts in a draw's band, lot fact values, the lot code in the reveal; tabular figures."
+      },
+      "heading-sm": {
+        "displayName": "Small heading",
+        "purpose": "A draw card's title and an event card's title on the public list."
+      },
+      "title-lead": {
+        "displayName": "Lead / section title",
+        "purpose": "Portal card, section and empty-state titles; public event titles; brand names; sign-in subtitle; the lot code chip."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Admin card titles, admin empty-state title, notification title."
+      },
+      "body-portal": {
+        "displayName": "Body, portal",
+        "purpose": "Usahawan copy, labels and cells; secondary portal copy is 0.875rem."
+      },
+      "note": {
+        "displayName": "Note",
+        "purpose": "The one line beside or under an event's call to action, on the public list and an event's page."
+      },
+      "body-admin": {
+        "displayName": "Body, admin",
+        "purpose": "Admin table cells, fields, alerts and detail values; portal secondary copy."
+      },
+      "small": {
+        "displayName": "Small",
+        "purpose": "Admin meta: breadcrumb, status, row action, form and detail labels, pagination; stacked-table cell labels; portal table headers."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Admin table headers, badges, nav count badges and stepper labels, sentence case; a date tile's month is the one uppercase use."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Inline code only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "rest",
+        "value": "0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.06)",
+        "purpose": "Cards, filter bar, buttons, event cards and the facts card; the border does most of the work."
+      },
+      {
+        "name": "raised",
+        "value": "0 2px 4px -2px rgba(16, 24, 40, 0.06), 0 8px 16px -4px rgba(16, 24, 40, 0.10)",
+        "purpose": "A whole-card link under the pointer (public event card) and a date tile laid over a banner."
+      },
+      {
+        "name": "pop",
+        "value": "0 4px 6px -2px rgba(16, 24, 40, 0.05), 0 16px 32px -8px rgba(16, 24, 40, 0.18)",
+        "purpose": "Dropdown menus and the open mobile drawers only."
+      },
+      {
+        "name": "focus-ring",
+        "value": "0 0 0 3px #ffdd00, 0 0 0 5px #0b0c0c",
+        "purpose": "GOV.UK focus ring on every :focus-visible element."
+      },
+      {
+        "name": "input-focus-halo",
+        "value": "0 0 0 3px rgba(26, 86, 219, 0.18)",
+        "purpose": "Mouse focus on inputs, with a blue border."
+      },
+      {
+        "name": "bevel-admin",
+        "value": "inset 0 -1px 0 rgba(0, 0, 0, 0.12)",
+        "purpose": "Office primary button, over Rest (0.14 on the success button)."
+      },
+      {
+        "name": "bevel-portal",
+        "value": "inset 0 -2px 0 rgba(0, 0, 0, 0.15)",
+        "purpose": "Portal and sign-in primary button, over Rest."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The one curve, exponential ease-out, for every transition."
+      },
+      {
+        "name": "fast",
+        "value": "140ms",
+        "purpose": "Hover and focus colour changes."
+      },
+      {
+        "name": "slow",
+        "value": "420ms",
+        "purpose": "The stepper's current stop settling in, once; skipped under reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "portal-compact",
+        "value": "576px"
+      },
+      {
+        "name": "public-stack",
+        "value": "640px"
+      },
+      {
+        "name": "admin-stack",
+        "value": "768px"
+      },
+      {
+        "name": "two-column-stack",
+        "value": "860px"
+      },
+      {
+        "name": "portal-desk",
+        "value": "992px"
+      },
+      {
+        "name": "column-unpadded",
+        "value": "1032px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Admin Primary Button",
+      "kind": "button",
+      "refersTo": "button-admin-primary",
+      "description": "The office's one action per area: solid blue, 40px, with a bevel.",
+      "html": "<button class=\"ds-btn-admin-primary\">Open voting</button>",
+      "css": ".ds-btn-admin-primary { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid transparent; border-radius: 8px; background: #1a56db; color: #fff; font: 600 0.875rem/1 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; cursor: pointer; box-shadow: 0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.06), inset 0 -1px 0 rgba(0,0,0,.12); transition: background-color 140ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-admin-primary:hover { background: #1546b3; } .ds-btn-admin-primary:active { background: #103a96; } .ds-btn-admin-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px #ffdd00, 0 0 0 5px #0b0c0c; }"
+    },
+    {
+      "name": "Admin Secondary Button",
+      "kind": "button",
+      "refersTo": "button-admin-secondary",
+      "description": "Every other office action: white with a strong hairline.",
+      "html": "<button class=\"ds-btn-admin-secondary\">Export CSV</button>",
+      "css": ".ds-btn-admin-secondary { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid #c3ccd8; border-radius: 8px; background: #fff; color: #101828; font: 600 0.875rem/1 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; cursor: pointer; box-shadow: 0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.06); transition: background-color 140ms cubic-bezier(0.16,1,0.3,1), border-color 140ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-admin-secondary:hover { background: #f8fafc; border-color: #a9b4c3; } .ds-btn-admin-secondary:focus-visible { outline: none; box-shadow: 0 0 0 3px #ffdd00, 0 0 0 5px #0b0c0c; }"
+    },
+    {
+      "name": "Portal Primary Button",
+      "kind": "button",
+      "refersTo": "button-portal-primary",
+      "description": "The usahawan's one step: 48px, 1rem, full width on a phone.",
+      "html": "<button class=\"ds-btn-portal-primary\">Confirm Lot</button>",
+      "css": ".ds-btn-portal-primary { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 20px; border: 1px solid transparent; border-radius: 8px; background: #1a56db; color: #fff; font: 600 1rem/1.2 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; cursor: pointer; box-shadow: 0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.06), inset 0 -2px 0 rgba(0,0,0,.15); transition: background-color 140ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-portal-primary:hover { background: #1546b3; } .ds-btn-portal-primary:active { background: #103a96; } .ds-btn-portal-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px #ffdd00, 0 0 0 5px #0b0c0c; }"
+    },
+    {
+      "name": "Your Lot Link",
+      "kind": "custom",
+      "refersTo": "your-lot",
+      "description": "The one place gold fills: the usahawan's own lot on a draw card.",
+      "html": "<a class=\"ds-your-lot\" href=\"#\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" fill=\"#e3a92b\" aria-hidden=\"true\"><path d=\"M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6\"/></svg>Lot <strong>DEWAN A-LEH1</strong></a>",
+      "css": ".ds-your-lot { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 1px solid #e3a92b; border-radius: 8px; background: #fdf5e1; color: #7a5300; font: 600 1rem/1.2 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; text-decoration: none; font-variant-numeric: tabular-nums; } .ds-your-lot:hover { background: #fbe7bd; } .ds-your-lot:focus-visible { outline: none; box-shadow: 0 0 0 3px #ffdd00, 0 0 0 5px #0b0c0c; }"
+    },
+    {
+      "name": "Admin Input",
+      "kind": "input",
+      "refersTo": "input-admin",
+      "description": "40px field; blue border on mouse focus, yellow ring on keyboard focus.",
+      "html": "<input class=\"ds-input-admin\" placeholder=\"Search company\">",
+      "css": ".ds-input-admin { height: 40px; width: 260px; padding: 0 12px; border: 1px solid #c3ccd8; border-radius: 8px; background: #fff; color: #101828; font: 400 0.875rem/1.4 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; outline: none; transition: border-color 140ms cubic-bezier(0.16,1,0.3,1), box-shadow 140ms cubic-bezier(0.16,1,0.3,1); } .ds-input-admin::placeholder { color: #586477; } .ds-input-admin:hover { border-color: #a9b4c3; } .ds-input-admin:focus { border-color: #1a56db; box-shadow: 0 0 0 3px rgba(26,86,219,.18); } .ds-input-admin:focus-visible { border-color: #0b0c0c; box-shadow: 0 0 0 3px #ffdd00, 0 0 0 5px #0b0c0c; }"
+    },
+    {
+      "name": "Status Pill",
+      "kind": "chip",
+      "refersTo": "status-ok",
+      "description": "State always names itself: tint, word, and a currentColor marker.",
+      "html": "<span class=\"ds-status ds-status-ok\"><span class=\"ds-status-dot\"></span>Lot disahkan</span> <span class=\"ds-status ds-status-warn\"><span class=\"ds-status-dot\"></span>Open</span> <span class=\"ds-status ds-status-bad\"><span class=\"ds-status-dot\"></span>Cancelled</span>",
+      "css": ".ds-status { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; padding: 2px 10px 2px 8px; border-radius: 999px; font: 600 0.8125rem/1.2 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; white-space: nowrap; } .ds-status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; } .ds-status-ok { background: #e6f4ec; color: #0b6239; } .ds-status-warn { background: #fdf2df; color: #7f4500; } .ds-status-bad { background: #fdece8; color: #9a2006; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "White surface, hairline border, 12px corners, resting shadow.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-header\">Locations</div><div class=\"ds-card-body\">Dewan A, 3x3, 4 plots</div></div>",
+      "css": ".ds-card { background: #fff; border: 1px solid #dce1e8; border-radius: 12px; box-shadow: 0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.06); overflow: hidden; font-family: 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; color: #101828; } .ds-card-header { padding: 14px 20px; border-bottom: 1px solid #e9edf2; font-size: 1rem; font-weight: 650; letter-spacing: -0.005em; } .ds-card-body { padding: 24px; font-size: 0.875rem; }"
+    },
+    {
+      "name": "Admin Rail",
+      "kind": "nav",
+      "refersTo": "nav-rail",
+      "description": "Navy rail grouped by job; active item fills navy-700 with a gold bar and gold icon.",
+      "html": "<nav class=\"ds-rail\"><a class=\"ds-rail-item\" href=\"#\">Events</a><a class=\"ds-rail-item is-active\" href=\"#\">Lot Draw</a><a class=\"ds-rail-item\" href=\"#\">Companies</a></nav>",
+      "css": ".ds-rail { width: 264px; padding: 10px 0; background: #0b2240; font-family: 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; } .ds-rail-item { position: relative; display: flex; align-items: center; min-height: 40px; margin: 2px 10px; padding: 9px 12px; border-radius: 8px; color: #d6deea; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: background-color 140ms cubic-bezier(0.16,1,0.3,1); } .ds-rail-item:hover { background: rgba(255,255,255,.07); color: #fff; } .ds-rail-item.is-active { background: #1b3f70; color: #fff; font-weight: 600; } .ds-rail-item.is-active::before { content: ''; position: absolute; left: -10px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: #e3a92b; } .ds-rail-item:focus-visible { outline: none; box-shadow: 0 0 0 3px #ffdd00, 0 0 0 5px #0b0c0c; }"
+    },
+    {
+      "name": "Draw-Stage Stepper",
+      "kind": "custom",
+      "refersTo": "draw-stepper",
+      "description": "The signature: four stops on every draw in the office (three, from Open, on the portal card), passed ones filled, the current one ringed.",
+      "html": "<ol class=\"ds-stepper\"><li class=\"done\"><span class=\"dot\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"currentColor\"><path d=\"M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z\"/></svg></span><span class=\"label\">Draft</span></li><li class=\"done\"><span class=\"dot\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"currentColor\"><path d=\"M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z\"/></svg></span><span class=\"label\">Open</span></li><li class=\"current\" aria-current=\"step\"><span class=\"dot\"></span><span class=\"label\">Closed</span></li><li><span class=\"dot\"></span><span class=\"label\">End</span></li></ol>",
+      "css": ".ds-stepper { list-style: none; margin: 0; padding: 0; display: flex; width: 420px; font-family: 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; } .ds-stepper li { position: relative; flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 6px; } .ds-stepper li::before { content: ''; position: absolute; top: 9px; left: calc(-50% + 12px); right: calc(50% + 12px); height: 2px; border-radius: 4px; background: #dce1e8; } .ds-stepper li:first-child::before { display: none; } .ds-stepper .dot { position: relative; z-index: 1; width: 20px; height: 20px; box-sizing: border-box; border-radius: 50%; display: grid; place-items: center; background: #fff; border: 2px solid #c3ccd8; color: transparent; } .ds-stepper .label { font-size: 0.75rem; font-weight: 600; color: #586477; } .ds-stepper li.done::before, .ds-stepper li.current::before { background: #1a56db; } .ds-stepper li.done .dot { background: #1a56db; border-color: #1a56db; color: #fff; } .ds-stepper li.done .label { color: #344054; } .ds-stepper li.current .dot { border-color: #1a56db; box-shadow: 0 0 0 4px #ebf1fd; } .ds-stepper li.current .dot::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #1a56db; } .ds-stepper li.current .label { color: #101828; } @media (prefers-reduced-motion: no-preference) { .ds-stepper li.current .dot { animation: ds-stop-in 420ms cubic-bezier(0.16,1,0.3,1) both; } @keyframes ds-stop-in { from { box-shadow: 0 0 0 12px rgba(26,86,219,0); } to { box-shadow: 0 0 0 4px #ebf1fd; } } }"
+    },
+    {
+      "name": "Event Card",
+      "kind": "card",
+      "refersTo": "event-card",
+      "description": "One event on the public list: date tile, title, meta, a note and the action; the whole card is the link.",
+      "html": "<article class=\"ds-ev\"><div class=\"ds-ev-date\"><span class=\"m\">Nov</span><span class=\"d\">21</span></div><div class=\"ds-ev-info\"><h3 class=\"ds-ev-title\"><a href=\"#\">Hari Kraf Kebangsaan 2026</a></h3><p class=\"ds-ev-meta\">Kuala Lumpur</p><div class=\"ds-ev-foot\"><p class=\"ds-ev-note\">Lot draw open until 28 Nov, 05:00 PM</p><a class=\"ds-ev-cta\" href=\"#\">Confirm your lot</a></div></div></article>",
+      "css": ".ds-ev { position: relative; display: grid; grid-template-columns: 84px minmax(0,1fr); column-gap: 40px; padding: 30px; background: #fff; border: 1px solid #dce1e8; border-radius: 12px; box-shadow: 0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.06); font-family: 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; color: #101828; transition: box-shadow 140ms cubic-bezier(0.16,1,0.3,1), border-color 140ms cubic-bezier(0.16,1,0.3,1); } .ds-ev:hover { border-color: #a9b4c3; box-shadow: 0 2px 4px -2px rgba(16,24,40,.06), 0 8px 16px -4px rgba(16,24,40,.10); } .ds-ev:focus-within { outline: 3px solid #ffdd00; outline-offset: 2px; } .ds-ev-date { overflow: hidden; align-self: start; border: 1px solid #dce1e8; border-radius: 8px; text-align: center; line-height: 1; font-variant-numeric: tabular-nums; } .ds-ev-date .m { display: block; padding: 5px 0 4px; background: #0b2240; color: #fff; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; } .ds-ev-date .d { display: block; padding: 10px 0 12px; font-size: 2.25rem; font-weight: 700; } .ds-ev-title { margin: 0 0 4px; font-size: 1.25rem; font-weight: 700; line-height: 1.3; } .ds-ev-title a { color: #101828; text-decoration: none; } .ds-ev-title a::after { content: ''; position: absolute; inset: 0; } .ds-ev-meta { margin: 0; font-size: 1rem; color: #586477; } .ds-ev-foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 16px; padding-top: 16px; } .ds-ev-note { margin: 0; font-size: .9375rem; color: #586477; } .ds-ev-cta { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; width: 240px; height: 56px; border-radius: 8px; background: #1a56db; color: #fff; font-size: 1rem; font-weight: 600; text-decoration: none; } .ds-ev-cta:hover { background: #1546b3; }"
+    },
+    {
+      "name": "Admin Empty State",
+      "kind": "custom",
+      "refersTo": "mac-empty",
+      "description": "An empty list: a quiet icon tile, a title, the reason.",
+      "html": "<div class=\"ds-empty\"><div class=\"ds-empty-icon\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 16 16\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 10 8h4.46l-3.05-3.812A.5.5 0 0 0 11.02 4zm-1.17-.437A1.5 1.5 0 0 1 4.98 3h6.04a1.5 1.5 0 0 1 1.17.563l3.7 4.625a.5.5 0 0 1 .106.374l-.39 3.124A1.5 1.5 0 0 1 14.117 13H1.883a1.5 1.5 0 0 1-1.489-1.314l-.39-3.124a.5.5 0 0 1 .106-.374z\"/></svg></div><p class=\"ds-empty-title\">No registrations yet</p><p class=\"ds-empty-reason\">Add companies to this draw from the registrations screen.</p></div>",
+      "css": ".ds-empty { padding: 48px 24px; text-align: center; background: #fff; border: 1px solid #dce1e8; border-radius: 12px; font-family: 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; } .ds-empty-icon { width: 52px; height: 52px; margin: 0 auto 14px; display: grid; place-items: center; border-radius: 12px; background: #eef1f5; color: #586477; } .ds-empty-title { margin: 0 0 6px; font-size: 1rem; font-weight: 650; color: #101828; } .ds-empty-reason { max-width: 56ch; margin: 0 auto; font-size: 0.875rem; color: #586477; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Service Counter",
+    "overview": "undilot reads like a government service and works like a well-made dashboard: a navy shell that holds still, white work surfaces on a cool grey ground, one blue that acts. The office sits at a desk for hours scanning draw lists, so its screens are dense, Stripe-calm tables and forms at 40px controls. Usahawan, many older and on a phone, get the same world at a larger size: 1rem body, 48px targets, one large button per draw. Every screen, office, portal and public alike, sits on the same 1000px column down the middle.\n\nNothing is decorative. Depth is a hairline and a whisper of shadow; colour carries meaning (blue acts, gold marks what is yours, state colours always name themselves in words). Two moments are authored: the draw-stage stepper's current stop settling in, and the lot reveal a usahawan watches on confirming a lot. The system refuses the grey dashboard with a single accent and the frosted Apple imitation it replaced.\n\nThe whole thing ships with no build step: every stylesheet is an inline <style> in a Blade partial, and the only libraries (Bootstrap 5.3.3, Bootstrap Icons 1.11.3) come from a CDN with pinned versions and SRI hashes. Tokens live once, as --ui-* custom properties in partials/ui-tokens.blade.php; nothing else spells a hex value except the two places CSS variables cannot reach (see The No Stray Hex Rule).",
+    "keyCharacteristics": [
+      "Navy shell (rail, participant bar, sign-in panel), white surfaces on a cool grey ground.",
+      "One 1000px column on every page; one top bar and one footer shared by the portal and the public pages.",
+      "One action blue; Kraftangan gold only for \"yours\", \"you are here\" and the mark.",
+      "GOV.UK yellow-and-black focus ring on every focusable thing.",
+      "System UI type with tabular figures on every number.",
+      "Hairline borders, 12px card corners, 8px control corners.",
+      "The draw-stage stepper on every draw, office and portal alike.",
+      "Two component prefixes that never meet: .mac- for the office, .ap- for usahawan."
+    ],
+    "rules": [
+      {
+        "name": "The One Blue Rule",
+        "body": "Only blue acts. A secondary action is white with a strong hairline; a destructive action is white with bad-text until hover turns it solid bad. On the navy bar the signed-out Sign In is the one white-filled button, because blue does not read on navy.",
+        "section": "colors"
+      },
+      {
+        "name": "The Gold Means Yours Rule",
+        "body": "Gold marks the usahawan's lot, where you are in the nav, and the mark. It is never a button fill, a status, or a highlight for anything else.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Stray Hex Rule",
+        "body": "Colour comes from --ui-* tokens, and no view, partial or script outside ui-tokens spells a hex value. There are exactly two exceptions, both because CSS variables cannot reach them, and both name the token each value mirrors: App\\Support\\CalendarPalette::PALETTE (PHP data written into inline styles and event data, one comment per value) and pdf/lot-result.blade.php (the PDF renderer reads no CSS variables; a header comment lists the tokens). Change a token, change it there too. The local-only dev/auto-login view is out of scope. The legacy --mac-*, --ap-*, --adm-*, --apple-* and --pub-* names survive only as aliases onto --ui-* so old inline styles resolve; new code uses --ui-* directly.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Figures Rule",
+        "body": "Every table cell, time, draw meta line, lot code and count sets font-variant-numeric: tabular-nums, so columns of numbers line up when scanned.",
+        "section": "typography"
+      },
+      {
+        "name": "The Bigger For Usahawan Rule",
+        "body": "The portal sets every equivalent role one step larger than admin, and its text-size toggle sets the root to 1.125rem / 1.25rem (112.5% / 125%). The office gets the same toggle at 112% / 124%.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Column Rule",
+        "body": "No shell sets its own width. Every page, and the bar and footer that frame it, reads --ui-page-w; a new surface takes the column, not a new max-width.",
+        "section": "layout"
+      },
+      {
+        "name": "The Tables Become Cards Rule",
+        "body": "Below 768px every .mac-table stacks: each row a bordered 12px card, each cell a label/value line (the value wrapped in .mac-cell) whose label is copied from the column header by script. A cell holding one field is labelled like any value; a cell with a button or more than one control, a blank header or a colspan is skipped. A wide one-form row (td[colspan]) instead shows each field's aria-label above it, label and field sharing a .mac-field box (the label aria-hidden; the box is display: contents above 768px), with the row's button on the fields' baseline; a worded button there takes its own full-width line under the fields. Detail rows stack label over value, full width. The outer card gives up its chrome so cards never nest in cards, unless it carries .mac-card-keep: a small table inside a detail card keeps the card, and its rows become sep-divided lines inside it, labelled at the detail-label size (0.8125rem/500).",
+        "section": "layout"
+      },
+      {
+        "name": "The Say What It Does Rule",
+        "body": "Below 768px an icon-only row button shows its own title as a visible word beside the icon (.mac-btn-word, added by script, aria-hidden so the accessible name still comes from the title), and grows to 40px. Older users should not have to guess what a bare tick or bin does. Above 768px the word is hidden.",
+        "section": "layout"
+      },
+      {
+        "name": "The Hairline First Rule",
+        "body": "A surface is separated from the ground by a 1px border, not by shadow. Never stack a shadow heavier than Rest on anything that does not float; the one response is Raised on a card that is itself one link, under the pointer.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do take every colour, radius, shadow and duration from --ui-* in partials/ui-tokens.blade.php.",
+      "Do write styles inline in a Blade partial and load libraries from a pinned CDN URL; there is no build step and no Node in production.",
+      "Do use .mac- classes on office pages and .ap- classes on participant pages, and only one of the two on any page.",
+      "Do put every page on the one column (max-width: var(--ui-page-max); margin-inline: auto; padding-inline: var(--ui-page-pad)), and frame participant and public pages with the shared portal-bar and site-footer partials.",
+      "Do give every focusable element the GOV.UK ring (0 0 0 3px #ffdd00, 0 0 0 5px #0b0c0c); plain text links take the yellow highlighter with a black underline instead.",
+      "Do show status as a word with its marker, never as colour alone.",
+      "Do put the draw-stage stepper on every draw, full on a draw's own page and compact in a table row.",
+      "Do keep portal targets at 48px, body text at 1rem, and secondary text (breadcrumb, small buttons, footer, stepper labels) no smaller than 0.875rem."
+    ],
+    "donts": [
+      "Don't use gold for anything except the usahawan's lot, the active-nav marker and the mark.",
+      "Don't introduce a second action colour; blue is the only one that acts.",
+      "Don't put .mac- or .ap- classes on the sign-in views; they carry their own look.",
+      "Don't spell a hex value outside ui-tokens; the only exceptions are CalendarPalette::PALETTE and the PDF slip, each naming the token it mirrors.",
+      "Don't give a shell or page its own max-width; take the column.",
+      "Don't add a shadow heavier than Rest to anything that does not float.",
+      "Don't mark an unread or active row with a coloured side stripe; use the blue tint and its hairline.",
+      "Don't fade a locked tile whose label must stay readable; hatch it.",
+      "Don't suppress the focus ring or replace it with a blue glow for keyboard users."
+    ]
+  }
+}
