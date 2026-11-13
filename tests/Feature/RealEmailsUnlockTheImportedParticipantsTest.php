@@ -157,6 +157,30 @@ it('refuses a value that is not an email address', function () {
         ->and($user->fresh()->email)->toBe('usahawan1@legacy.test');
 });
 
+it('refuses when two people share an IC, instead of silently picking one', function () {
+    // Across the 175 imported participants the IC is unique — measured. But
+    // `users` also holds demo accounts, office-entered rows and anyone added by
+    // hand, and NOTHING in the schema makes `ic_number` unique.
+    //
+    // Keyed on the IC, a collision is invisible: the lookup keeps whichever row
+    // it saw last, so the office's address lands on a person they did not name
+    // and the other keeps an address that cannot receive mail. Neither row says
+    // anything is wrong.
+    $one = User::factory()->create(['ic_number' => '890508-12-0000', 'email' => 'usahawan1@legacy.test']);
+    $two = User::factory()->create(['ic_number' => '890508120000', 'email' => 'usahawan2@legacy.test']);
+
+    $exit = Artisan::call('legacy:emails', [
+        'path' => csv(['ic,email', '890508-12-0000,siti@example.com']),
+        '--force' => true,
+    ]);
+
+    expect($exit)->toBe(1)
+        ->and($one->fresh()->email)->toBe('usahawan1@legacy.test')
+        ->and($two->fresh()->email)->toBe('usahawan2@legacy.test');
+
+    expect(Artisan::output())->toContain('890508-12-0000');
+});
+
 it('writes nothing on a dry run', function () {
     $user = importedParticipant('890508-12-0000');
 

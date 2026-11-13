@@ -72,10 +72,22 @@ class LegacyEmails extends Command
         }
 
         // Keyed on the digits of the IC, because the dump writes it two ways.
-        $people = User::whereNotNull('ic_number')->get()
-            ->keyBy(fn (User $u) => self::digits($u->ic_number));
+        //
+        // AMBIGUOUS KEYS ARE REMOVED, not resolved. Nothing in the schema makes
+        // `ic_number` unique — `users` also holds demo rows, office-entered rows
+        // and anyone added by hand — and keyBy keeps whichever row it saw last.
+        // A collision would therefore put the office's address on a person they
+        // did not name, with nothing on either row to say so. An IC that names
+        // two people names nobody, so it is dropped here and reported below.
+        $byIc = User::whereNotNull('ic_number')->get()
+            ->groupBy(fn (User $u) => self::digits($u->ic_number));
 
-        $this->plan($rows, $people);
+        $ambiguous = $byIc->filter(fn ($group) => $group->count() > 1);
+
+        $people = $byIc->reject(fn ($group) => $group->count() > 1)
+            ->map(fn ($group) => $group->first());
+
+        $this->plan($rows, $people, $ambiguous);
 
         if ($this->applied === []) {
             $this->report(true);
@@ -170,7 +182,7 @@ class LegacyEmails extends Command
      * index — a half-applied identity list is the worst outcome here, because
      * nobody can tell by looking which half it was.
      */
-    private function plan(array $rows, $people): void
+    private function plan(array $rows, $people, $ambiguous): void
     {
         $claimed = [];
 
@@ -203,6 +215,14 @@ class LegacyEmails extends Command
                     $this->applied,
                     fn ($change) => $change['email'] !== $email
                 ));
+
+                continue;
+            }
+
+            if (isset($ambiguous[$ic])) {
+                $names = $ambiguous[$ic]->pluck('name')->implode(', ');
+                $this->failed[] = "line {$line}: IC {$row['ic']} names more than one person "
+                    ."({$names}) — nothing here says which, so neither was changed";
 
                 continue;
             }

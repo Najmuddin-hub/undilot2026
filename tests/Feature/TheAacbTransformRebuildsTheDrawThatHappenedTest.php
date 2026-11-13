@@ -284,6 +284,26 @@ it('rebuilds cleanly on --fresh, taking the registrations out before the plots',
         ->and(DB::table('polls')->count())->toBe(2);
 });
 
+it('still finds its own event on --fresh after the office edits the description', function () {
+    plantAacb();
+    Artisan::call('legacy:transform-aacb');
+
+    $first = Event::first();
+
+    // The description is a FIELD THE OFFICE EDITS. It is the first thing they
+    // will change once they know the event's real name — and if --fresh
+    // identifies the imported event by reading it, the match quietly stops
+    // working and a second AACB event is built beside the first, with the same
+    // 175 booths under a different id.
+    $first->update(['description' => 'Pesta Kraf Antarabangsa 2025']);
+
+    Artisan::call('legacy:transform-aacb', ['--fresh' => true]);
+
+    expect(Event::count())->toBe(1, 'A second AACB event was built beside the first.')
+        ->and(Plot::count())->toBe(3)
+        ->and(DB::table('event_registrations')->count())->toBe(2);
+});
+
 it('writes nothing on a dry run', function () {
     plantAacb();
 

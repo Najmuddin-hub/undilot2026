@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Event;
 use App\Models\KrafBidang;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -103,6 +104,9 @@ class LegacyTransformAacb extends Command
             $sizeIds = $this->planRows($event, $plan, $codes);
             $plots = $this->plots($event, $booths, $sizeIds, $codes);
             $this->draw($event, $booths, $people, $users, $plots, $sizeIds, $codes);
+
+            // Dicatat di sini, bukan dibaca semula daripada acara: lihat EVENT_KEY.
+            Setting::set(self::EVENT_KEY, (string) $event->id);
 
             $this->info("Event #{$event->id} — {$event->title}");
         });
@@ -548,9 +552,32 @@ class LegacyTransformAacb extends Command
         $this->line('Draw window from `votetime`: '.$window[0]->toDateTimeString().' to '.$window[1]->toDateTimeString());
     }
 
+    /**
+     * Which event this command built last time.
+     *
+     * KEPT IN `settings`, NOT READ BACK OFF THE EVENT. The first version matched
+     * on `description like '%event code AACB%'` — and the description is the
+     * first field the office edits once the event has a real name. The moment
+     * they do, `--fresh` matches nothing, removes nothing, and builds a SECOND
+     * AACB event beside the first: same 175 booths, different id, and the lot
+     * draw now exists twice. Measured, not imagined.
+     *
+     * A settings key is invisible to every screen, so nothing can edit it by
+     * accident.
+     */
+    private const EVENT_KEY = 'legacy_aacb_event_id';
+
     private function forget(): void
     {
-        $events = Event::where('description', 'like', '%event code '.self::EVENT_CODE.'%')->pluck('id');
+        $recorded = Setting::get(self::EVENT_KEY);
+
+        $events = Event::query()
+            ->when($recorded, fn ($q) => $q->orWhere('id', (int) $recorded))
+            // The description match stays as a fallback, for an event built
+            // before this key existed. It is the weaker of the two and must
+            // never be the only one.
+            ->orWhere('description', 'like', '%event code '.self::EVENT_CODE.'%')
+            ->pluck('id');
 
         if ($events->isEmpty()) {
             return;
