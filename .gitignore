@@ -62,3 +62,6 @@ Thumbs.db
 /kraf_lama.sql
 *.sql
 !database/**/*.sql
+
+# Scratch SDD: ledger kemajuan, brief tugasan, pakej semakan.
+/.superpowers/
