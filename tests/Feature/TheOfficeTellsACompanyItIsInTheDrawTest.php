@@ -5,6 +5,7 @@ use App\Models\Event;
 use App\Models\EventRegistration;
 use App\Models\User;
 use App\Notifications\AddedToDraw;
+use App\Notifications\RemovedFromDraw;
 use Illuminate\Support\Facades\Notification;
 
 /*
@@ -83,4 +84,25 @@ it('carries the keys the notifications screen reads', function () {
 
     expect(str_contains($payload['message'], 'Pesta Kraf'))
         ->toBeTrue('The message has to name the event; the screen shows it alone.');
+});
+
+it('tells the company when HQ removes it from a draw it was already told it is in, carrying the reason in the notification itself', function () {
+    Notification::fake();
+    [$admin, $user, $event, $registration] = inDrawFixture();
+    $registration->update(['verified_at' => now(), 'first_verified_at' => now()]);
+
+    $this->actingAs($admin, 'admin')
+        ->delete(route('admin.events.registrations.destroy', [$event, $registration]), [
+            'removal_reason' => 'Booth size no longer matches the plan.',
+        ])
+        ->assertRedirect();
+
+    // The row that used to carry the reason is gone the moment it is removed, so
+    // the reason has nowhere to live but the notification's own data.
+    Notification::assertSentTo($user, RemovedFromDraw::class, function (RemovedFromDraw $notification) use ($user) {
+        expect(str_contains($notification->toArray($user)['message'], 'Booth size no longer matches the plan.'))
+            ->toBeTrue('The row is deleted by the time this is read; the reason must be in the notification payload.');
+
+        return true;
+    });
 });

@@ -250,7 +250,7 @@ peruntukan awal. **Dua kunci, dua soalan, dengan sengaja.**
 ### Dua semakan: baris ialah kelulusan zon, `verified_at` ialah HQ
 
 Tiada lajur `status` pada `event_registrations`. **Admin negeri menyemak
-semua** — butiran syarikat, bukti bayaran, kod kraf, saiz gerai — dan
+semua** — butiran syarikat, nota bayaran, kod kraf, saiz gerai — dan
 meletakkannya ke senarai cabutan. Baris itu menunggu HQ.
 
 **HQ menyemak semula** (gate `verify-draw-list`): sahkan (boleh membetulkan kod
@@ -287,8 +287,6 @@ lubang; jangan "betulkan".
 - Sebaik cabutan bermula, admin negeri **tidak menambah atau meluluskan**
   sesiapa (`zoneLocked()`); hanya HQ, dan baris HQ disahkan serta-merta. Tiada
   baris menunggu HQ boleh wujud semasa cabutan berjalan.
-- Penolakan zon terus kepada peserta; HQ melihatnya selepas itu (papan pemuka
-  7 hari, dan "Rejected by zones" pada senarai cabutan) — `rejectedByZone()`.
 - `first_verified_at` tidak pernah dikosongkan; ia membezakan semakan semula
   daripada yang pertama, supaya peserta diberitahu sekali sahaja.
 
