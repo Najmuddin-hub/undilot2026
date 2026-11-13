@@ -10,9 +10,10 @@ class HomeController extends Controller
     /**
      * The public landing page: every published event, upcoming first.
      *
-     * Read-only for everyone. A participant asks to join from the event's own
-     * page; the office approves. How many lots an event holds stays off it, as
-     * it does everywhere a participant looks.
+     * Read-only for everyone. The office enters every company into an event's
+     * draw list; there is nothing here for a participant to do but look. How
+     * many lots an event holds stays off it, as it does everywhere a
+     * participant looks.
      */
     public function index(Request $request)
     {

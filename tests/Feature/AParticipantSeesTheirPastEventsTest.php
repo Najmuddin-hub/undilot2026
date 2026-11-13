@@ -134,13 +134,3 @@ it('says so when there is no past event yet, and is for a signed-in participant 
 
     $this->get(route('dashboard'))->assertSee('href="'.route('past-events').'"', false);
 });
-
-it('takes a request off the dashboard once its event has ended', function () {
-    $company = Company::factory()->create();
-    $event = endedEvent('Lama Ditolak', 30);
-    \App\Models\EventJoinRequest::factory()->create(['event_id' => $event->id, 'company_id' => $company->id, 'status' => 'rejected']);
-
-    $this->actingAs($company->user, 'web')->get(route('dashboard'))
-        ->assertOk()
-        ->assertDontSee('Lama Ditolak');
-});

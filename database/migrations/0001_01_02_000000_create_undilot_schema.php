@@ -214,11 +214,6 @@ return new class extends Migration
             // company is added to a draw list, where it can still be changed.
             $table->string('plot_size')->nullable();
 
-            // What the participant last said about the company's recognition and
-            // certificates, filled into the next join request so a returning
-            // company only confirms it. Company::credentials() names the keys.
-            $table->json('credentials')->nullable();
-
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
@@ -272,8 +267,8 @@ return new class extends Migration
             $table->dateTime('start_date');
             $table->dateTime('end_date');
 
-            // The registration window: a participant may ask to join only between
-            // these two. With auto_open / auto_close it also drives `events.status`.
+            // The registration window. With auto_open / auto_close it drives
+            // `events.status` — the office enters companies inside it.
             $table->dateTime('registration_open_at');
             $table->dateTime('registration_close_at');
             $table->boolean('auto_open')->default(false);
@@ -425,56 +420,15 @@ return new class extends Migration
             $table->timestamp('first_verified_at')->nullable();
             $table->text('hq_note')->nullable();
 
-            // How a company the office added paid — receipt number, date, how —
-            // written by the zone for HQ to check. A company that asked to join
-            // carries its proof on the join request instead.
+            // How the company paid — receipt number, date, how — written by the
+            // zone for HQ to check. The office enters every company, so this is
+            // the only record of payment there is.
             $table->string('payment_note', 500)->nullable();
 
             $table->timestamps();
 
             // One entry per company per event: one draw per event, and a company
             // cannot be in the same draw twice.
-            $table->unique(['event_id', 'company_id']);
-        });
-
-        /**
-         * A participant asking to join an event's draw. Approving it is what
-         * puts the company on the draw list; the request stays as the record.
-         * draft | pending | approved | rejected — EventJoinRequest::STATUSES.
-         * A draft is the participant's own, unsent; the office sees pending on.
-         */
-        Schema::create('event_join_requests', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('event_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-
-            // cash | cheque | transfer | waiver — EventJoinRequest::PAYMENT_METHODS.
-            $table->string('payment_method', 20)->nullable();
-            // Set only for a waiver — EventJoinRequest::WAIVER_CATEGORIES.
-            $table->string('waiver_category', 20)->nullable();
-
-            // [{name, path, original}]: the payment receipt first, then any
-            // supporting documents. Files on the `local` disk, served through a
-            // controller that asks who is reading.
-            $table->json('documents')->nullable();
-
-            // The company's credentials as they were sent with this request: a
-            // copy, so a later renewal does not rewrite what the office reviewed.
-            $table->json('answers')->nullable();
-
-            $table->string('status', 20)->default('pending');
-            $table->text('reject_reason')->nullable();
-            // Why HQ took the company off the draw list after it was told it is
-            // in. On the request because the row itself is gone; shown with
-            // "taken off" until the company asks again.
-            $table->text('removed_reason')->nullable();
-            $table->foreignId('reviewed_by')->nullable()->constrained('admins')->nullOnDelete();
-            $table->timestamp('reviewed_at')->nullable();
-            $table->timestamps();
-
-            // One request per company per event; asking again after a rejection
-            // reuses it.
             $table->unique(['event_id', 'company_id']);
         });
 
@@ -781,7 +735,6 @@ return new class extends Migration
             'notifications',
             'preset_allocations',
             'polls',
-            'event_join_requests',
             'event_registrations',
             'plots',
             'bidang_allocations',

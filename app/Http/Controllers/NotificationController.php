@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 /**
- * The participant's inbox: draw reminders and join-request answers.
+ * The participant's inbox: draw reminders and in-draw notices (AddedToDraw,
+ * RemovedFromDraw).
  */
 class NotificationController extends Controller
 {

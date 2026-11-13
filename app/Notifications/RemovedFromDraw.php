@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notification;
  * HQ took the company off a draw it had been told it is in, and why. Sent only
  * for a company that heard "you are in" — one taken off before HQ verified it
  * never heard anything, and hears nothing now. Carries `join_event_id`, like
- * JoinRequestAnswered: the next step is the event page, not Confirm Lot.
+ * AddedToDraw: the next step is the event page, not Confirm Lot.
  */
 class RemovedFromDraw extends Notification implements ShouldQueue
 {
@@ -36,8 +36,7 @@ class RemovedFromDraw extends Notification implements ShouldQueue
             ->greeting('Hi '.$notifiable->name.',')
             ->line('The office took your company off the draw list for '.$this->event->title.'.')
             ->line('Reason: '.$this->reason)
-            ->action('Open the event', route('events.show', $this->event))
-            ->line('You may ask to join again while registration is open.');
+            ->action('Open the event', route('events.show', $this->event));
     }
 
     public function toArray($notifiable): array

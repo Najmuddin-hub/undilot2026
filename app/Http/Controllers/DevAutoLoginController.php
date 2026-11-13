@@ -92,9 +92,9 @@ class DevAutoLoginController extends Controller
 
     /**
      * Deliver what is queued, then stop. Every notification here is queued, so
-     * on this machine a draw reminder, a join-request answer or a removal notice
-     * is a row in `jobs` until this runs. The server has undilot-queue.service
-     * instead.
+     * on this machine a draw reminder, an in-draw notification or a removal
+     * notice is a row in `jobs` until this runs. The server has
+     * undilot-queue.service instead.
      */
     public function workQueue()
     {
