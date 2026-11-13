@@ -46,16 +46,17 @@ class HomeController extends Controller
         abort_if($event->status === 'draft', 404);
 
         // What a signed-in participant's company has to do with this event: on
-        // the draw list, a join request in flight, or neither.
+        // the draw list, being added to it, or neither. There is no third state:
+        // a participant cannot ask to join.
         $company = auth('web')->user()?->company;
 
         return view('events.show', [
             'event' => $event,
             'company' => $company,
             'onList' => $company && $event->registrations()->announced()->where('company_id', $company->id)->exists(),
-            // Put on the list by the office, waiting for HQ: no form to fill in.
+            // Put on the list by the office, waiting for HQ. Reads
+            // event_registrations only — nothing here is a join request.
             'beingAdded' => $company && $event->registrations()->whereNull('first_verified_at')->where('company_id', $company->id)->exists(),
-            'joinRequest' => $company ? $event->joinRequests()->where('company_id', $company->id)->first() : null,
         ]);
     }
 

@@ -202,7 +202,7 @@ class Event extends Model
     }
 
     /**
-     * Where a published event stands for a visitor: ended, now, open, register,
+     * Where a published event stands for a visitor: ended, now, open,
      * soon or closed. The public list and the event page both read this, so they never
      * disagree. The event's own dates win over the draw — a fair that is on, or
      * over, is that first — and an open draw whose deadline has passed is
@@ -215,7 +215,6 @@ class Event extends Model
             $this->start_date->isPast() => 'now',
             $this->polling_status === 'polling' && ! $this->polling_deadline?->isPast() => 'open',
             in_array($this->polling_status, ['polling', 'closed', 'completed', 'cancelled'], true) => 'closed',
-            $this->acceptsJoinRequests() => 'register',
             default => 'soon',
         };
     }
