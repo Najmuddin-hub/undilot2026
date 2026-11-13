@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Event;
-use App\Models\EventJoinRequest;
 use App\Models\EventRegistration;
 use App\Notifications\AddedToDraw;
 use App\Notifications\RemovedFromDraw;
@@ -20,10 +19,9 @@ use Illuminate\Validation\Rule;
  * The draw list: which companies are in one event's lot draw.
  *
  * PUTTING A COMPANY HERE IS THE APPROVAL. The row exists, so the company is in
- * the draw. It gets here two ways — the office adds it, or the office approves
- * the company's own join request — and both go through addToList(). What
- * the office still has to say is the craft CODE it draws under and the booth
- * SIZE it needs, because the plan is built from those two numbers.
+ * the draw — the office adds it, through addToList(). What the office still
+ * has to say is the craft CODE it draws under and the booth SIZE it needs,
+ * because the plan is built from those two numbers.
  *
  * THE CODE IS A STRING, NOT A REFERENCE, and that is deliberate: the allocator
  * compares `event_registrations.code` against the code on the `kraf_bidangs` row
@@ -31,13 +29,13 @@ use Illuminate\Validation\Rule;
  * stores what was picked.
  *
  * TWO CHECKS. The zone admin checks everything — the company, its payment
- * proof, the craft code and booth size — and approves; the row goes on the list
- * waiting for HQ. HQ (gate `verify-draw-list`) checks it again and either
- * verifies it, fixing the code or size in the same step, or returns it to the
- * zone with a note. The join request stays pending and the participant hears
- * nothing until HQ verifies; the draw does not open while any row waits
- * (PollingGuard). A zone admin's later change to the code or size clears the
- * verification again — EventRegistration::booted() — so HQ sees it once more.
+ * note, the craft code and booth size — and the row goes on the list waiting
+ * for HQ. HQ (gate `verify-draw-list`) checks it again and either verifies it,
+ * fixing the code or size in the same step, or returns it to the zone with a
+ * note. The participant hears nothing until HQ verifies; the draw does not
+ * open while any row waits (PollingGuard). A zone admin's later change to the
+ * code or size clears the verification again — EventRegistration::booted() —
+ * so HQ sees it once more.
  *
  * SCOPE IS DOUBLE HERE, and both halves are needed. EventVisibility::authorize()
  * answers "may you open this event at all"; the query below answers "whose rows
@@ -84,14 +82,6 @@ class EntRegistrationController extends Controller
             $registrations->each(fn ($r) => $r->plot && ! $r->plot->is_allocated && $r->setRelation('plot', null));
         }
 
-        // The request each row came in by, for the payment proof it carries —
-        // still pending while the row waits for HQ. A row the office added has none.
-        $proofs = $event->joinRequests()
-            ->whereIn('company_id', $registrations->pluck('company_id'))
-            ->whereIn('status', ['pending', 'approved'])
-            ->get()
-            ->keyBy('company_id');
-
         // Companies that could still be added: in this admin's zone, on the
         // books, and not already in this draw.
         $candidates = Company::query()
@@ -101,23 +91,9 @@ class EntRegistrationController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'state', 'kraf_code', 'plot_size']);
 
-        // Join requests waiting on the zone, in this admin's zone. One the zone
-        // has approved is on the list below, waiting for HQ, and not repeated.
-        $joinRequests = $scoped($event->joinRequests()->with('company')->where('status', 'pending'))
-            ->whereNotIn('company_id', $event->registrations()->select('company_id'))
-            ->oldest()
-            ->get();
-
         return view('admin.events.registrations.index', [
             'event' => $event,
-            'joinRequests' => $joinRequests,
-            // HQ looks back over what the zones turned away: a rejection goes to
-            // the participant at once and HQ is not asked, so it is shown here.
-            'rejected' => $admin->can('verify-draw-list')
-                ? $event->joinRequests()->rejectedByZone()->with(['company', 'reviewer'])->latest('reviewed_at')->get()
-                : collect(),
             'registrations' => $registrations,
-            'proofs' => $proofs,
             'isHq' => $admin->can('verify-draw-list'),
             'codeFrozen' => $this->codeFrozen($event),
             'zoneLocked' => $this->zoneLocked($request, $event),
@@ -275,8 +251,7 @@ class EntRegistrationController extends Controller
 
     /**
      * Take one row off the list. A company that was told it is in hears that it
-     * is out, and why; the reason stays on its join request, if it came by one,
-     * for its dashboard and event page. One never told hears nothing.
+     * is out, and why. One never told hears nothing.
      */
     private function removeFromList(EventRegistration $registration, ?string $reason): void
     {
@@ -286,111 +261,12 @@ class EntRegistrationController extends Controller
             return;
         }
 
-        $registration->event->joinRequests()
-            ->where('company_id', $registration->company_id)->where('status', 'approved')
-            ->get()->each->update(['removed_reason' => $reason]);
-
         $registration->company->user?->notify(new RemovedFromDraw($registration->event, $reason));
     }
 
     private function isHq(Request $request): bool
     {
         return $request->user('admin')->can('verify-draw-list');
-    }
-
-    /** Approve a join request: the company goes on the draw list with this code and size. */
-    public function approve(Request $request, Event $event, EventJoinRequest $joinRequest)
-    {
-        EventVisibility::authorize($event);
-        $this->authorizeCompany($request, $joinRequest->company);
-        abort_unless($joinRequest->status === 'pending', 409, 'That request has already been answered.');
-        if ($event->isCalledOff()) {
-            return back()->with('error', 'This event was cancelled or put back to draft. Its requests cannot be answered.');
-        }
-        if ($this->zoneLocked($request, $event)) {
-            return back()->with('error', self::HQ_ONLY_NOW);
-        }
-
-        $data = $request->validate([
-            'code' => ['nullable', 'string', 'max:50'],
-            'plot_size' => ['nullable', Rule::in(PlotSizes::all())],
-        ]);
-
-        DB::transaction(fn () => $this->addToList($event, $joinRequest->company, $data['code'] ?? null, $data['plot_size'] ?? null));
-
-        return back()->with('success', ($this->isHq($request)
-            ? "{$joinRequest->company->name} added to the draw list."
-            : "{$joinRequest->company->name} added to the draw list. HQ will verify before the company is told.")
-            .Company::boothMovedNote($this->moved, $this->isHq($request)));
-    }
-
-    /**
-     * Reject a join request. The reason is shown to the participant, who may
-     * ask again.
-     *
-     * The notification is inline, not a class, on purpose: this whole method
-     * belongs to the join-request module and is deleted whole in the task
-     * that removes approve()/reject() from this controller. AddedToDraw
-     * (Task 1 of the same removal) only ever says "you are in" — it carries
-     * no rejection branch — so this is not a candidate for reuse.
-     */
-    public function reject(Request $request, Event $event, EventJoinRequest $joinRequest)
-    {
-        EventVisibility::authorize($event);
-        $this->authorizeCompany($request, $joinRequest->company);
-        abort_unless($joinRequest->status === 'pending', 409, 'That request has already been answered.');
-        if ($event->isCalledOff()) {
-            return back()->with('error', 'This event was cancelled or put back to draft. Its requests cannot be answered.');
-        }
-
-        $data = $request->validate(['reject_reason' => ['required', 'string', 'max:1000']]);
-
-        $joinRequest->update($data + [
-            'status' => 'rejected',
-            'reviewed_by' => $request->user('admin')->id,
-            'reviewed_at' => now(),
-        ]);
-
-        $joinRequest->company->user?->notify(new class($event, $data['reject_reason']) extends \Illuminate\Notifications\Notification implements \Illuminate\Contracts\Queue\ShouldQueue
-        {
-            use \Illuminate\Bus\Queueable;
-
-            public function __construct(private Event $event, private string $reason)
-            {
-                // Sent from inside the office's transaction: only once it holds.
-                $this->afterCommit();
-            }
-
-            public function via($notifiable): array
-            {
-                return ['mail', 'database'];
-            }
-
-            public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
-            {
-                return (new \Illuminate\Notifications\Messages\MailMessage)
-                    ->greeting('Hi '.$notifiable->name.',')
-                    ->subject('Request not approved: '.$this->event->title)
-                    ->line('The office did not approve your request to join '.$this->event->title.'.')
-                    ->line('Reason: '.$this->reason)
-                    ->action('Change and send again', route('events.show', $this->event))
-                    ->line('You can send it again while registration is open.');
-            }
-
-            public function toArray($notifiable): array
-            {
-                return [
-                    'title' => 'Request not approved',
-                    'join_event_id' => $this->event->id,
-                    'approved' => false,
-                    'event_name' => $this->event->title,
-                    'message' => 'Your request to join '.$this->event->title." was not approved.\nReason: ".$this->reason,
-                    'type' => 'alert',
-                ];
-            }
-        });
-
-        return back()->with('success', "Request from {$joinRequest->company->name} rejected.");
     }
 
     /**

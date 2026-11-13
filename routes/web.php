@@ -133,8 +133,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::put('{registration}/payment-note', [EntRegistrationController::class, 'paymentNote'])->name('payment-note');
                 Route::post('{registration}/return', [EntRegistrationController::class, 'returnToZone'])->middleware('can:verify-draw-list')->name('return');
                 Route::delete('{registration}', [EntRegistrationController::class, 'destroy'])->name('destroy');
-                Route::post('join/{joinRequest}/approve', [EntRegistrationController::class, 'approve'])->name('approve');
-                Route::post('join/{joinRequest}/reject', [EntRegistrationController::class, 'reject'])->name('reject');
             });
 
         /*
