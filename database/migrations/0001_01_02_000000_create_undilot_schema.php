@@ -525,12 +525,166 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        /* ── Legacy import staging ───────────────────────────────────────── */
+
+        /**
+         * A landing strip for the old system's dump. Nothing here is application
+         * data: these three tables hold the office's MySQL 4-era tables verbatim
+         * so an import can be re-run without asking the office for the files
+         * again, and so a wrong mapping costs a re-transform rather than a
+         * re-export.
+         *
+         * FIVE RULES, and the first is the one that matters:
+         *
+         * 1. EVERY DATA COLUMN IS A NULLABLE STRING. Not a convenience — the
+         *    dump cannot be stored any other way on this MySQL. `usahawan` and
+         *    `upengawai` declare `lastlogin`, `votetime` and `votetimepay` as
+         *    `datetime NOT NULL` with no default, which on MySQL 4/5 means
+         *    "never" was written as `0000-00-00 00:00:00`. This server runs
+         *    `sql_mode = STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE`, which
+         *    REJECTS that value for a date column outright. `prio` has the same
+         *    shape of problem: an `int` column in a dump that may hold ''.
+         *    Typing a staging column is how the load fails on row one.
+         *
+         * 2. COLUMN NAMES ARE THE LEGACY NAMES, LOWERCASED, and nothing else.
+         *    One rule, so the load needs no per-column mapping and an audit is a
+         *    diff rather than a judgement. That is why `userright`, `loginname`,
+         *    `sessionid` and `protokol` read oddly: they are `UserRight`,
+         *    `LoginName`, `sessionID` and `Protokol` in the dump.
+         *
+         * 3. `legacy_id` KEEPS THE ORIGINAL `id`. Without it the links between
+         *    the old tables cannot be rebuilt: `ukhemah.usahawanid` points at
+         *    `usahawan.id`, and `usahawan.byuser` at `upengawai.id`. It is a
+         *    string, not an integer, for rule 1's reason.
+         *
+         * 4. `source_table` NAMES THE TABLE THE ROW CAME FROM. The dump holds
+         *    fifteen `ukhemah*` tables — one live, fourteen hourly snapshots with
+         *    names like `ukhemah_day1_2pm` and `ukhemah_18 feb 11`. One staging
+         *    table with provenance beats fifteen staging tables, and the column
+         *    carries those names (spaces, brackets and all) as data, where they
+         *    cannot break anything.
+         *
+         * 5. NO FOREIGN KEY, NO UNIQUE INDEX. Staging has to accept duplicates,
+         *    orphans and half-filled rows — `ukhemah10` has only six of the
+         *    fourteen columns, so the rest land NULL. Finding that is the
+         *    transform's job and a refusal here would only hide it.
+         *
+         * `imported_at` instead of `timestamps()`: a staging row is written once
+         * and never updated, so `updated_at` would be a copy of `created_at`
+         * forever. The only fact worth keeping is when the load ran.
+         */
+        Schema::create('legacy_upengawai', function (Blueprint $table) {
+            $table->id();
+            $table->string('legacy_id', 20)->nullable();
+            $table->string('source_table', 100)->nullable();
+
+            // `upengawai`: the old officers table. There is NO email column in
+            // it — it signed in with `loginname` — and `admins.email` is unique
+            // and required, so the transform has to be given or build one.
+            $table->string('name', 100)->nullable();
+            $table->string('password', 100)->nullable();
+            $table->string('userright', 100)->nullable();
+            $table->string('loginname', 100)->nullable();
+            $table->string('state', 100)->nullable();
+            $table->string('sessionid', 100)->nullable();
+            $table->string('lastlogin', 25)->nullable();
+            $table->string('ic', 100)->nullable();
+            $table->string('jawatan', 100)->nullable();
+
+            $table->timestamp('imported_at')->nullable();
+
+            $table->index('legacy_id');
+            $table->index('source_table');
+        });
+
+        Schema::create('legacy_usahawan', function (Blueprint $table) {
+            $table->id();
+            $table->string('legacy_id', 20)->nullable();
+            $table->string('source_table', 100)->nullable();
+
+            // `usahawan`: one flat row per participant per event, which is what
+            // undilot splits across users, companies, event_registrations and
+            // polls. It carries no email, no password and no event column.
+            $table->string('name', 200)->nullable();
+            $table->string('ic', 20)->nullable();
+            $table->string('address', 200)->nullable();
+            $table->string('postcode', 10)->nullable();
+            $table->string('region', 20)->nullable();
+            $table->string('state', 20)->nullable();
+            $table->string('companyname', 100)->nullable();
+            $table->string('register', 20)->nullable();
+            $table->string('crafttype', 100)->nullable();
+            $table->string('category', 80)->nullable();
+            $table->string('sstatus', 10)->nullable();
+            $table->string('sstatusexport', 10)->nullable();
+            $table->string('payment', 20)->nullable();
+            $table->string('lot', 10)->nullable();
+            $table->string('location', 20)->nullable();
+            $table->string('votetime', 25)->nullable();
+            $table->string('bidang', 30)->nullable();
+            $table->string('subcrafttype', 50)->nullable();
+            $table->string('salu', 20)->nullable();
+            $table->string('bayarstatus', 10)->nullable();
+            $table->string('protokol', 10)->nullable();
+            $table->string('preset', 10)->nullable();
+            $table->string('undi', 10)->nullable();
+            $table->string('comid', 10)->nullable();
+            $table->string('byuser', 11)->nullable();
+            $table->string('votetimepay', 25)->nullable();
+
+            $table->timestamp('imported_at')->nullable();
+
+            $table->index('legacy_id');
+            $table->index('source_table');
+
+            // The three the dump itself indexed, kept because the transform
+            // joins on exactly these, plus the two keys it resolves.
+            $table->index('name');
+            $table->index('ic');
+            $table->index('companyname');
+            $table->index('comid');
+            $table->index('byuser');
+        });
+
+        Schema::create('legacy_ukhemah', function (Blueprint $table) {
+            $table->id();
+            $table->string('legacy_id', 20)->nullable();
+            $table->string('source_table', 100)->nullable();
+
+            // The widest shape of the fifteen `ukhemah*` tables. Only the live
+            // `ukhemah` has `event`; the fourteen snapshots do not, and
+            // `ukhemah10` stops after `subtypeitem`.
+            $table->string('khemah', 100)->nullable();
+            $table->string('typeitem', 100)->nullable();
+            $table->string('usahawanid', 11)->nullable();
+            $table->string('boothid', 10)->nullable();
+            $table->string('subtypeitem', 100)->nullable();
+            $table->string('bidang', 100)->nullable();
+            $table->string('crafttype', 100)->nullable();
+            $table->string('category', 100)->nullable();
+            $table->string('sstatusexport', 100)->nullable();
+            $table->string('sstatus', 100)->nullable();
+            $table->string('protokol', 100)->nullable();
+            $table->string('prio', 20)->nullable();
+            $table->string('event', 100)->nullable();
+
+            $table->timestamp('imported_at')->nullable();
+
+            $table->index('legacy_id');
+            $table->index('source_table');
+            $table->index('usahawanid');
+            $table->index('boothid');
+            $table->index('event');
+        });
     }
 
     public function down(): void
     {
         // Reverse creation order, so a foreign key never outlives what it points at.
         foreach ([
+            'legacy_ukhemah',
+            'legacy_usahawan',
+            'legacy_upengawai',
             'notifications',
             'preset_allocations',
             'polls',

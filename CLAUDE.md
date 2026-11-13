@@ -393,6 +393,37 @@ ke cakera `public`** — pada origin ini ia boleh membawa skrip.
 View composer dalam `AppServiceProvider` menamakan setiap view yang membacanya.
 View baharu yang membacanya **mesti** ditambah pada senarai itu, atau ia 500.
 
+### Jadual `legacy_*` ialah pelantar pendaratan, bukan data aplikasi
+
+`legacy_upengawai`, `legacy_usahawan` dan `legacy_ukhemah` memegang dump pejabat
+**sebijik-sebijik**. Tiada FK, tiada unique, dan **setiap lajur data ialah string
+nullable**.
+
+String itu bukan kemalasan. Dump itu MySQL 4: tiada satu lajur pun nullable, jadi
+"tiada nilai" ialah `''`; dan `lastlogin`, `votetime`, `votetimepay` diisytihar
+`datetime NOT NULL` tanpa default, jadi "belum pernah" ialah
+`0000-00-00 00:00:00`. MySQL 8 di sini berjalan dengan
+`NO_ZERO_DATE,STRICT_TRANS_TABLES` dan **menolak kedua-duanya** — diukur:
+ralat 1292 untuk zero-date pada lajur `datetime`, ralat 1366 untuk `''` pada
+lajur `int`. Menaip lajur staging bermakna import mati pada baris pertama.
+
+Nama lajur ialah **nama lama, dihurufkecilkan, tiada apa lagi** — itu sebabnya
+`userright`, `loginname`, `sessionid` dan `protokol` kelihatan ganjil. Satu
+peraturan bermakna pemuatan tidak perlu pemetaan per-lajur dan audit ialah diff.
+
+`legacy_id` menyimpan `id` asal, kerana tanpanya pautan antara jadual lama tidak
+boleh dibina semula (`ukhemah.usahawanid` → `usahawan.id`,
+`usahawan.byuser` → `upengawai.id`). `source_table` menamakan jadual asal: dump
+itu ada **lima belas** jadual `ukhemah*` — satu hidup, empat belas snapshot
+setiap jam (`ukhemah_day1_2pm`, `ukhemah_18 feb 11`), dan `ukhemah10` berhenti
+selepas enam lajur.
+
+Transform dari staging ke jadual aplikasi yang membuat keputusan. **Jangan**
+tambah lajur status (`sstatus`, `bayarstatus`, `Protokol`) kepada
+`event_registrations` untuk menampung dump — model dua-semakan sudah
+menggantikannya, dan `PollingGuard` serta `EventRegistration::booted()`
+bergantung padanya.
+
 ---
 
 ## Bila menyalin daripada `daftar`
@@ -460,3 +491,25 @@ Dalam ujian Pest, `actingAs()` tanpa guard menggunakan guard **lalai**, yang
 permintaan admin terdahulu dalam ujian yang sama mungkin telah tukar kepada
 `admin`. Namakan guard (`actingAs($user, 'web')`) dalam ujian yang mencampur
 kedua-duanya, dan `auth()->forgetGuards()` sebelum menguji akses orang lain.
+
+### Jangan beri mesej kepada `toContain` — ia needle, bukan mesej
+
+`toContain` ialah **variadic**. `expect($x)->not->toContain('check (', 'mesej')`
+membaca "mesej" sebagai needle **kedua**, dan `not->toContain` lulus sebaik
+**mana-mana** needle tidak hadir. Mesej penerangan tidak pernah hadir dalam
+nilai, jadi assertion itu lulus tanpa pernah menimbang needle pertama.
+
+Ini bukan teori. Pengawal enum dalam
+`tests/Feature/SchemaHoldsTheSameShapeOnBothDriversTest.php` ditulis begitu dan
+**mati sepanjang hayat fail** — diuji dengan menyelit lajur `enum` betul ke dalam
+skema: bentuk lama lulus, bentuk satu-needle gagal. Ujian yang CLAUDE.md sendiri
+namakan sebagai pengunci peraturan tiada-enum tidak mengunci apa-apa.
+
+`toBe`, `toBeTrue`, `toBeNull` dan `toThrow` **memang** terima mesej sebagai
+argumen kedua. Hanya `toContain` tidak. Bila mesej diperlukan bersama
+pemeriksaan "tidak mengandungi", tulis perbandingan eksplisit dan letak mesej
+pada `toBeTrue`, dan simpan penerangan dalam komen.
+
+`toContain` positif dengan beberapa needle (`toContain('a', 'b', 'c')`) adalah
+sah dan bermakna — semua needle mesti hadir. Yang berbahaya ialah bentuk
+**bernegatif**.

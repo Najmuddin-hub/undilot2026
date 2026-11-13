@@ -55,8 +55,18 @@ it('declares no enum or check constraint on any status column', function () {
         ->filter()
         ->implode("\n");
 
-    expect($sql)->not->toContain('check (', 'A CHECK constraint is how Laravel renders enum() on SQLite — '
-        .'and it is the half of an enum that silently stops matching MySQL.');
+    // A CHECK constraint is how Laravel renders enum() on SQLite, and it is the
+    // half of an enum that silently stops matching MySQL.
+    //
+    // THE NEEDLE STANDS ALONE, and it has to. `toContain` is variadic, so a
+    // second argument is read as another needle, not as a failure message — and
+    // a negated `toContain` passes as soon as ANY needle is absent. This
+    // assertion previously carried its explanation as that second argument,
+    // which meant it passed for the whole life of the file: the explanatory
+    // sentence is never present in the schema, so the negation was satisfied
+    // before `check (` was ever considered. The explanation now lives in this
+    // comment, where it cannot disarm the test.
+    expect($sql)->not->toContain('check (');
 });
 
 it('refuses to delete a plot that a draw entry still points at', function () {
