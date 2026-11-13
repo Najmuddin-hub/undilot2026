@@ -7,7 +7,7 @@ use App\Models\Company;
 use App\Models\Event;
 use App\Models\EventJoinRequest;
 use App\Models\EventRegistration;
-use App\Notifications\JoinRequestAnswered;
+use App\Notifications\AddedToDraw;
 use App\Notifications\RemovedFromDraw;
 use App\Support\EventVisibility;
 use App\Support\KrafPicker;
@@ -213,10 +213,9 @@ class EntRegistrationController extends Controller
     }
 
     /**
-     * HQ's check: the row counts. The company's pending join request is settled
-     * here, not at the zone's approval, and the participant is told — once:
-     * a row HQ verified before, changed by a zone and verified again, says
-     * nothing new.
+     * HQ's check: the row counts, and the participant is told — once: a row
+     * HQ verified before, changed by a zone and verified again, says nothing
+     * new.
      */
     private function verify(EventRegistration $registration): void
     {
@@ -229,13 +228,10 @@ class EntRegistrationController extends Controller
             'hq_note' => null,
         ]);
 
-        // One at a time, not a mass update, so each is audited.
-        $settled = $registration->event->joinRequests()
-            ->where('company_id', $registration->company_id)->where('status', 'pending')->get();
-        $settled->each->update(['status' => 'approved', 'reviewed_by' => auth('admin')->id(), 'reviewed_at' => now()]);
-
-        if ($first || $settled->isNotEmpty()) {
-            $registration->company->user?->notify(new JoinRequestAnswered($registration->event));
+        // Told once, on the first verification. A row HQ verified before,
+        // edited by a zone and verified again, says nothing new.
+        if ($first) {
+            $registration->company->user?->notify(new AddedToDraw($registration->event));
         }
     }
 
@@ -328,7 +324,16 @@ class EntRegistrationController extends Controller
             .Company::boothMovedNote($this->moved, $this->isHq($request)));
     }
 
-    /** Reject a join request. The reason is shown to the participant, who may ask again. */
+    /**
+     * Reject a join request. The reason is shown to the participant, who may
+     * ask again.
+     *
+     * The notification is inline, not a class, on purpose: this whole method
+     * belongs to the join-request module and is deleted whole in the task
+     * that removes approve()/reject() from this controller. AddedToDraw
+     * (Task 1 of the same removal) only ever says "you are in" — it carries
+     * no rejection branch — so this is not a candidate for reuse.
+     */
     public function reject(Request $request, Event $event, EventJoinRequest $joinRequest)
     {
         EventVisibility::authorize($event);
@@ -345,7 +350,45 @@ class EntRegistrationController extends Controller
             'reviewed_by' => $request->user('admin')->id,
             'reviewed_at' => now(),
         ]);
-        $joinRequest->company->user?->notify(new JoinRequestAnswered($event, $data['reject_reason']));
+
+        $joinRequest->company->user?->notify(new class($event, $data['reject_reason']) extends \Illuminate\Notifications\Notification implements \Illuminate\Contracts\Queue\ShouldQueue
+        {
+            use \Illuminate\Bus\Queueable;
+
+            public function __construct(private Event $event, private string $reason)
+            {
+                // Sent from inside the office's transaction: only once it holds.
+                $this->afterCommit();
+            }
+
+            public function via($notifiable): array
+            {
+                return ['mail', 'database'];
+            }
+
+            public function toMail($notifiable): \Illuminate\Notifications\Messages\MailMessage
+            {
+                return (new \Illuminate\Notifications\Messages\MailMessage)
+                    ->greeting('Hi '.$notifiable->name.',')
+                    ->subject('Request not approved: '.$this->event->title)
+                    ->line('The office did not approve your request to join '.$this->event->title.'.')
+                    ->line('Reason: '.$this->reason)
+                    ->action('Change and send again', route('events.show', $this->event))
+                    ->line('You can send it again while registration is open.');
+            }
+
+            public function toArray($notifiable): array
+            {
+                return [
+                    'title' => 'Request not approved',
+                    'join_event_id' => $this->event->id,
+                    'approved' => false,
+                    'event_name' => $this->event->title,
+                    'message' => 'Your request to join '.$this->event->title." was not approved.\nReason: ".$this->reason,
+                    'type' => 'alert',
+                ];
+            }
+        });
 
         return back()->with('success', "Request from {$joinRequest->company->name} rejected.");
     }
