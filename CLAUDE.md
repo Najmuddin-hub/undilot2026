@@ -257,8 +257,8 @@ meletakkannya ke senarai cabutan. Baris itu menunggu HQ.
 atau saiz dalam langkah yang sama), atau pulangkan kepada zon dengan nota
 (`hq_note`). Zon membetulkan, baris menunggu HQ lagi.
 
-**HQ boleh memintas zon, dengan sengaja.** Permintaan yang HQ luluskan atau
-syarikat yang HQ tambah terus disahkan — tiada semakan zon. Itu keputusan, bukan
+**HQ boleh memintas zon, dengan sengaja.** Syarikat yang HQ tambah sendiri ke
+senarai cabutan terus disahkan — tiada semakan zon. Itu keputusan, bukan
 lubang; jangan "betulkan".
 
 - Baris yang pejabat masukkan **tidak diberitahu** sehingga HQ mengesahkan.
