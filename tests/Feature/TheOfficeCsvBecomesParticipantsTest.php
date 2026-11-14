@@ -207,6 +207,31 @@ it('reads a file Excel saved, byte-order mark and all', function () {
         ->and(User::where('ic_number', '890508-12-0000')->exists())->toBeTrue();
 });
 
+it('reads a backslash as an ordinary character, not as an escape', function () {
+    // Measured, because the two readings differ by more than one character. PHP's
+    // historical escape default is '\\', under which the \" below reads as an
+    // escaped quote: the quoted field never closes and the WHOLE REST OF THE LINE
+    // becomes one value —
+    //
+    //     escape '\\'  =>  ["Kraf A\",890508120000\n"]
+    //     escape ''    =>  ["Kraf A\", "890508120000"]
+    //
+    // so the IC column disappears, and a row the office can see plainly is
+    // reported as having no IC and skipped. PHP 9 changes that default to '',
+    // which is why the importer names it rather than inheriting it.
+    $path = tempnam(sys_get_temp_dir(), 'bslash').'.csv';
+    file_put_contents($path, "nama,ic,syarikat\n".'SITI,890508-12-0000,"Kraf A\\"'."\n");
+
+    $exit = Artisan::call('import:participants', ['path' => $path, '--force' => true]);
+
+    expect($exit)->toBe(0);
+
+    $user = User::where('ic_number', '890508-12-0000')->first();
+
+    expect($user)->not->toBeNull('The IC column was swallowed by the backslash.')
+        ->and($user->company->name)->toBe('Kraf A\\');
+});
+
 it('writes nothing on a dry run', function () {
     $exit = Artisan::call('import:participants', [
         'path' => csvFile([CSV_HEAD, 'SITI,890508-12-0000,,,Kraf Siti,Johor,,,,']),
