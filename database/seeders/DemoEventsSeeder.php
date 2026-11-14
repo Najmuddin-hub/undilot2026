@@ -4,14 +4,12 @@ namespace Database\Seeders;
 
 use App\Models\Company;
 use App\Models\Event;
-use App\Models\EventJoinRequest;
 use App\Models\EventRegistration;
 use App\Models\KrafBidang;
 use App\Models\Plot;
 use App\Models\PlotSize;
 use App\Models\Poll;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * DEMO DATA — never on the live server: DemoSeeder calls it, below
@@ -20,9 +18,8 @@ use Illuminate\Support\Facades\Storage;
  *
  * Fills the participant's screens with something to look at: events open for
  * registration, one coming soon, one already in a draw list, and past events
- * that the demo companies took part in, each with its lots, slips and the
- * answers each company sent when it asked to join (or none, where the office
- * added it).
+ * that the demo companies took part in, each with its lots and slips, entered
+ * by the office the way every company is.
  *
  * Re-runnable and additive: an event is matched on its title, and one that
  * already exists is left exactly as it is, children and all. Nothing is ever
@@ -50,7 +47,6 @@ class DemoEventsSeeder extends Seeder
 
     public function run(): void
     {
-        $this->photos();
         $faker = fake('ms_MY');
         $companies = Company::whereHas('user', fn ($q) => $q->where('email', 'like', '%@demo.test'))
             ->whereNotNull('kraf_code')
@@ -148,8 +144,7 @@ class DemoEventsSeeder extends Seeder
 
     /**
      * A draw that has run: most companies on the list, each with a lot and a
-     * confirmation (one in every few with none), and the answers it sent; about
-     * a third were added by the office and sent none.
+     * confirmation (one in every few with none).
      */
     private function pastDraw(Event $event, $companies, $faker): void
     {
@@ -184,76 +179,6 @@ class DemoEventsSeeder extends Seeder
                 $registration->update(['plot_id' => $plot->id]);
                 Poll::firstOrCreate(['user_id' => $company->user_id, 'event_id' => $event->id], ['code' => $company->kraf_code]);
             }
-
-            // Two in three asked to join and were approved; the rest the office added.
-            if ($faker->boolean(67)) {
-                EventJoinRequest::create([
-                    'event_id' => $event->id,
-                    'company_id' => $company->id,
-                    'user_id' => $company->user_id,
-                    'payment_method' => $faker->randomElement(['transfer', 'transfer', 'cash']),
-                    'waiver_category' => null,
-                    'documents' => [],
-                    'answers' => $this->answers($company, $event, $faker),
-                    'status' => 'approved',
-                    'reject_reason' => null,
-                    'reviewed_by' => null,
-                    'reviewed_at' => $event->registration_close_at,
-                ]);
-            }
         }
-    }
-
-    /**
-     * The five product photos every demo request points at: plain coloured
-     * squares with a number, so the photo pages have something to show.
-     * Written once; existing files are left alone.
-     */
-    private function photos(): void
-    {
-        if (! function_exists('imagecreatetruecolor')) {
-            return; // no GD: the requests still count five, the pictures just do not open
-        }
-
-        $colours = [[26, 86, 219], [18, 128, 74], [217, 138, 0], [196, 50, 10], [91, 63, 179]];
-        foreach ($colours as $i => [$r, $g, $b]) {
-            $path = 'products/demo/'.($i + 1).'.jpg';
-            if (Storage::disk('local')->exists($path)) {
-                continue;
-            }
-            $image = imagecreatetruecolor(600, 600);
-            imagefill($image, 0, 0, imagecolorallocate($image, $r, $g, $b));
-            $white = imagecolorallocate($image, 255, 255, 255);
-            imagestring($image, 5, 250, 290, 'Produk '.($i + 1), $white);
-            ob_start();
-            imagejpeg($image, null, 85);
-            Storage::disk('local')->put($path, ob_get_clean());
-            imagedestroy($image);
-        }
-    }
-
-    /** What a company might have answered when it asked to join, then. */
-    private function answers(Company $company, Event $event, $faker): array
-    {
-        $cert = fn (string $prefix) => [
-            'number' => $prefix.'-'.$faker->numerify('#####'),
-            'start' => $event->start_date->clone()->subYear()->toDateString(),
-            'end' => $event->start_date->clone()->addYears(rand(1, 2))->toDateString(),
-        ];
-        $classified = $faker->boolean(60);
-        $standard = $company->qualityStandard();
-        $quality = $standard && $faker->boolean(70) ? $standard : ($standard ? 'none' : null);
-
-        return [
-            'recognition' => $faker->randomElement(['none', 'none', 'none', 'adiguru', 'tokoh']),
-            'classification' => $classified ? 'yes' : 'no',
-            'classification_cert' => $classified ? $cert('PKT') : null,
-            'quality' => $quality,
-            'quality_cert' => $quality && $quality !== 'none' ? $cert('SPK') : null,
-            'contact_name' => $faker->name(),
-            'contact_phone' => $faker->numerify('01#-### ####'),
-            // The five demo pictures written by photos().
-            'product_images' => array_map(fn ($i) => ['path' => "products/demo/{$i}.jpg", 'original' => "produk{$i}.jpg"], range(1, 5)),
-        ];
     }
 }

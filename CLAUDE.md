@@ -15,7 +15,9 @@ diterbitkan semula dengan membaca kod.
 **undilot2026** ialah pecahan daripada **`undilotlook`** (2026-11-13): hanya
 log masuk peserta, log masuk admin (super, HQ dan negeri pada satu `/admin/login`,
 peranan menentukan akses), acara dan cabutan lot. Pengumuman, halaman footer,
-pautan sosial, skrin audit trail dan laporan CSV dibuang. Jejak audit (`Auditable`)
+pautan sosial, skrin audit trail, laporan CSV dan permohonan sertai dibuang —
+pejabat memasukkan setiap syarikat ke senarai cabutan sendiri; peserta tidak
+pernah memohon, mereka log masuk dan mengesahkan lot. Jejak audit (`Auditable`)
 masih direkod; cuma skrinnya tiada. Data sebenar akan dimuatkan dari CSV.
 
 `undilotlook` pula dipisahkan daripada **`daftar`** (`f:\herd\daftar`) pada 2026-10-13. `daftar`
@@ -47,7 +49,8 @@ disalin.
 menanya pangkalan data, atau skrip PHP yang memuat `bootstrap/app.php`.
 
 Setiap notifikasi berbaris (queue). Pada mesin ini tiada pekerja berjalan, jadi
-peringatan undian, jawapan permohonan sertai dan notis pembuangan kekal dalam
+peringatan undian, `AddedToDraw` (syarikat dimasukkan ke cabutan, dihantar
+sekali bila HQ mengesahkan buat pertama kali) dan `RemovedFromDraw` kekal dalam
 `jobs` sehingga butang pada `/auto` ditekan.
 
 **Jerangkap shell pada mesin ini:** `php` tiada dalam PATH bash — guna
@@ -247,22 +250,24 @@ peruntukan awal. **Dua kunci, dua soalan, dengan sengaja.**
 ### Dua semakan: baris ialah kelulusan zon, `verified_at` ialah HQ
 
 Tiada lajur `status` pada `event_registrations`. **Admin negeri menyemak
-semua** — butiran syarikat, bukti bayaran, kod kraf, saiz gerai — dan
+semua** — butiran syarikat, nota bayaran, kod kraf, saiz gerai — dan
 meletakkannya ke senarai cabutan. Baris itu menunggu HQ.
 
 **HQ menyemak semula** (gate `verify-draw-list`): sahkan (boleh membetulkan kod
 atau saiz dalam langkah yang sama), atau pulangkan kepada zon dengan nota
 (`hq_note`). Zon membetulkan, baris menunggu HQ lagi.
 
-**HQ boleh memintas zon, dengan sengaja.** Permintaan yang HQ luluskan atau
-syarikat yang HQ tambah terus disahkan — tiada semakan zon. Itu keputusan, bukan
+**HQ boleh memintas zon, dengan sengaja.** Syarikat yang HQ tambah sendiri ke
+senarai cabutan terus disahkan — tiada semakan zon. Itu keputusan, bukan
 lubang; jangan "betulkan".
 
-- Permintaan sertai kekal `pending` dan peserta **tidak diberitahu** sehingga
-  HQ mengesahkan. Bacaan portal menggunakan skop `announced()`
-  (`first_verified_at`), **bukan** `verified_at`: syarikat yang sudah
-  diberitahu tidak hilang dari portalnya sendiri bila zon menyunting dan HQ
-  menyemak semula.
+- Baris yang pejabat masukkan **tidak diberitahu** sehingga HQ mengesahkan.
+  Bacaan portal menggunakan skop `announced()` (`first_verified_at`), **bukan**
+  `verified_at`: syarikat yang sudah diberitahu tidak hilang dari portalnya
+  sendiri bila zon menyunting dan HQ menyemak semula. Pengesahan HQ yang
+  pertama menghantar `AddedToDraw` — satu-satunya pemberitahuan "anda dalam
+  cabutan ini", kerana syarikat tidak pernah memohon untuk tahu bila ditolak
+  sebelum itu.
 - `PollingGuard` menahan cabutan selagi ada baris belum disahkan.
 - Perubahan kod atau saiz oleh admin negeri — dari mana-mana pintu, termasuk
   halaman syarikat melalui `syncBoothSize()` — **mengosongkan** `verified_at`.
@@ -276,17 +281,12 @@ lubang; jangan "betulkan".
 - Admin negeri hanya membuang baris yang **belum** diberitahu kepada syarikat
   (`first_verified_at` null). Mengeluarkan syarikat daripada cabutan yang ia
   sudah diberitahu ialah keputusan HQ (`zoneMayRemove()`). HQ mesti memberi
-  sebab; syarikat menerima `RemovedFromDraw` dan sebab itu disimpan pada
-  `event_join_requests.removed_reason` (baris pendaftaran sudah tiada).
+  sebab; syarikat menerima `RemovedFromDraw`, dan sebab itu hidup **hanya**
+  dalam mesej notifikasi itu sendiri, kekal dalam jadual `notifications` —
+  baris pendaftaran yang dibuang tidak menyimpan apa-apa.
 - Sebaik cabutan bermula, admin negeri **tidak menambah atau meluluskan**
   sesiapa (`zoneLocked()`); hanya HQ, dan baris HQ disahkan serta-merta. Tiada
   baris menunggu HQ boleh wujud semasa cabutan berjalan.
-- **Unpublished (`closed`) bukan "dibatalkan".** `Event::isCalledOff()` hanya
-  cabutan `cancelled` atau acara kembali ke `draft`. auto_close menyahterbit
-  acara sendiri bila pendaftaran tutup, sementara permintaan yang dihantar
-  sebelum itu masih di pejabat — ia mesti boleh dijawab.
-- Penolakan zon terus kepada peserta; HQ melihatnya selepas itu (papan pemuka
-  7 hari, dan "Rejected by zones" pada senarai cabutan) — `rejectedByZone()`.
 - `first_verified_at` tidak pernah dikosongkan; ia membezakan semakan semula
   daripada yang pertama, supaya peserta diberitahu sekali sahaja.
 
@@ -381,12 +381,13 @@ daripada jadual `sessions`. Pada pemacu lain ia memadan **tiada apa**: reset
 melaporkan berjaya dan peranti lain kekal log masuk. Tiada ralat, tiada ujian
 gagal — hanya satu `Log::warning`.
 
-### Fail muat naik yang dikawal tinggal di cakera `local`
+### Satu-satunya muat naik ialah sepanduk acara, ke cakera `public`
 
-Dokumen dan foto permohonan sertai disimpan di cakera `local` dan dihidang melalui
-controller yang bertanya siapa yang dicapai (`join-requests.document`). Hanya imej
-yang tidak rahsia (sepanduk acara) ke cakera `public`. **Tiada SVG
-ke cakera `public`** — pada origin ini ia boleh membawa skrip.
+`EventController::storeBanner()` ialah satu-satunya laluan muat naik dalam
+aplikasi ini — tiada apa lagi menulis ke cakera `local`. Pengesahan
+(`'mimes:jpeg,png,jpg,webp'`) **sengaja** tidak menyenaraikan `svg`: pada
+origin ini SVG boleh membawa skrip, dan sepanduk dihidang terus dari cakera
+`public`.
 
 ### `$unreadNotificationCount` disediakan oleh senarai view, bukan `*`
 

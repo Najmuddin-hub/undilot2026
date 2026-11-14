@@ -6,14 +6,12 @@ use App\Models\Admin;
 use App\Models\BidangAllocation;
 use App\Models\Company;
 use App\Models\Event;
-use App\Models\EventJoinRequest;
 use App\Models\EventRegistration;
 use App\Models\KrafBidang;
 use App\Models\Plot;
 use App\Models\PlotSize;
 use App\Services\LotAllocator;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * DEMO DATA for the manual test sheet (docs/testing/undilot-test-manual.xlsx)
@@ -32,15 +30,12 @@ class DemoScenarioSeeder extends Seeder
 {
     private Admin $hq;
 
-    private Admin $johorAdmin;
-
     /** @var array<string, Company> keyed by short name */
     private array $co = [];
 
     public function run(): void
     {
         $this->hq = Admin::where('email', 'hq@demo.test')->firstOrFail();
-        $this->johorAdmin = Admin::where('email', 'admin.johor@demo.test')->firstOrFail();
         $this->companies();
 
         $this->noPlanYet();
@@ -56,7 +51,6 @@ class DemoScenarioSeeder extends Seeder
         $this->unpublished();
         $this->autoClosed();
         $this->draftExpoRows();
-        $this->registrationOver();
         $this->autoOpen();
         $this->toDelete();
         $this->fairExtras();
@@ -295,7 +289,7 @@ class DemoScenarioSeeder extends Seeder
      */
     private function drawList(): void
     {
-        $e = $this->event('Uji: Senarai Cabutan', 'TC-090 to TC-107, TC-110, TC-153, TC-160: verified, waiting-for-HQ and returned rows; two pending Johor requests (approve one, reject one); one rejected by Kedah this week.', [
+        $e = $this->event('Uji: Senarai Cabutan', 'TC-090 to TC-107, TC-110, TC-153: verified, waiting-for-HQ and returned rows.', [
             'polling_status' => 'draft',
         ]);
         if (! $e) {
@@ -306,19 +300,13 @@ class DemoScenarioSeeder extends Seeder
         foreach (['verified1', 'verified2', 'formula', 'saiz2', 'saiz3'] as $k) {
             $this->row($e, $k);
         }
-        // Added by the zone, waiting for HQ.
+        // Added by the zone, waiting for HQ: TC-153 as well as the others here.
         $this->row($e, 'waiting1', verified: false);
         $this->row($e, 'waiting2', verified: false);
         $this->row($e, 'selangor', verified: false);
-        // Asked to join, zone approved, HQ not yet: TC-153.
-        $this->request($e, 'waiting3', 'approved', $this->johorAdmin);
         $this->row($e, 'waiting3', verified: false);
         // Returned by HQ with a note.
         $this->row($e, 'returned', verified: false, hqNote: 'Resit bayaran tidak jelas. Sila muat naik semula.');
-        // Pending requests in Johor, with a receipt.
-        $this->request($e, 'pending1', 'pending');
-        $this->request($e, 'pending2', 'pending');
-        $this->request($e, 'kedah', 'rejected', Admin::where('email', 'admin.kedah@demo.test')->first(), 'Kod kraf tidak sepadan dengan produk.');
     }
 
     /** TC-065: Maximum participants 2, already 2 on the list. */
@@ -344,19 +332,16 @@ class DemoScenarioSeeder extends Seeder
         ]);
     }
 
-    /** TC-088: unpublished by auto-close, with a request sent before close. */
+    /** TC-088: unpublished by auto-close. */
     private function autoClosed(): void
     {
-        $e = $this->event('Uji: Tutup Automatik', 'TC-088: registration closed yesterday and auto-close unpublished it; a Johor request sent before the close is still pending.', [
+        $this->event('Uji: Tutup Automatik', 'TC-088: registration closed yesterday and auto-close unpublished it.', [
             'status' => 'closed',
             'auto_close' => true,
             'registration_open_at' => now()->subWeeks(3),
             'registration_close_at' => now()->subDay(),
             'polling_status' => 'draft',
         ]);
-        if ($e) {
-            $this->request($e, 'johor5', 'pending', at: now()->subDays(3));
-        }
     }
 
     /** TC-161: the Draft event carries a draw list in several zones; TC-147: and a plan. */
@@ -369,21 +354,6 @@ class DemoScenarioSeeder extends Seeder
             }
             $e->update(['polling_start_date' => now()->addMonths(3), 'polling_deadline' => now()->addMonths(3)->addWeek()]);
             $this->plan($e, 'Dewan Draf', ['3x3' => 4], ['TBPS' => ['3x3', 1], 'TTK' => ['3x3', 1], 'RMH' => ['3x3', 1]]);
-        }
-    }
-
-    /** TC-084: registration closed; Kedah's request was rejected and cannot be sent again. */
-    private function registrationOver(): void
-    {
-        $e = $this->event('Uji: Pendaftaran Tamat', 'TC-084: registration closed yesterday; Anyaman Mengkuang Kedah was not approved.', [
-            'registration_open_at' => now()->subMonth(),
-            'registration_close_at' => now()->subDay(),
-            'polling_status' => 'draft',
-        ]);
-        if ($e) {
-            // Ten days back, so it does not join TC-103's "last 7 days".
-            $this->request($e, 'kedah', 'rejected', Admin::where('email', 'admin.kedah@demo.test')->first(), 'Dokumen tidak lengkap.');
-            $e->joinRequests()->update(['reviewed_at' => now()->subDays(10)]);
         }
     }
 
@@ -479,40 +449,6 @@ class DemoScenarioSeeder extends Seeder
             'hq_note' => $hqNote,
             'payment_note' => $verified ? null : 'Resit 0042, tunai, '.now()->subDays(2)->format('d/m/Y'),
         ]);
-    }
-
-    private function request(Event $event, string $key, string $status, ?Admin $reviewer = null, ?string $reason = null, $at = null): void
-    {
-        $company = $this->co[$key];
-        $path = "join-requests/{$event->id}/resit-{$company->id}.jpg";
-        Storage::disk('local')->put($path, Storage::disk('local')->get('products/demo/1.jpg') ?? 'receipt');
-
-        $request = EventJoinRequest::create([
-            'event_id' => $event->id,
-            'company_id' => $company->id,
-            'user_id' => $company->user_id,
-            'payment_method' => 'transfer',
-            'waiver_category' => null,
-            'documents' => [['name' => 'Payment receipt', 'path' => $path, 'original' => 'resit.jpg']],
-            'answers' => [
-                'recognition' => 'none',
-                'classification' => 'no',
-                'classification_cert' => null,
-                'quality' => null,
-                'quality_cert' => null,
-                'contact_name' => $company->user->name,
-                'contact_phone' => $company->user->phone,
-                'product_images' => array_map(fn ($i) => ['path' => "products/demo/{$i}.jpg", 'original' => "produk{$i}.jpg"], range(1, 5)),
-            ],
-            'status' => $status,
-            'reject_reason' => $reason,
-            'reviewed_by' => $reviewer?->id,
-            'reviewed_at' => $reviewer ? now()->subDays(2) : null,
-        ]);
-
-        if ($at) {
-            $request->forceFill(['created_at' => $at, 'updated_at' => $at])->save();
-        }
     }
 
     /**

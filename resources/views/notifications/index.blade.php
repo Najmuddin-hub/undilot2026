@@ -24,11 +24,11 @@
     @php
         $data = $notification->data;
         $lotLink = isset($data['event_id']) ? route('zvote.index', $data['event_id']) : null;
-        // The answer to a request to join: in the draw, or what to change.
+        // You are in the draw, or you were taken off it.
         [$joinLink, $joinLabel] = match (true) {
             ! isset($data['join_event_id']) => [null, null],
             ! empty($data['approved']) => [route('dashboard'), 'Open dashboard'],
-            default => [route('events.show', $data['join_event_id']), 'Change and send again'],
+            default => [route('events.show', $data['join_event_id']), 'Open the event'],
         };
     @endphp
     <div class="ap-card ap-card-padded mb-3" @if(! $notification->read_at) style="background:var(--ui-blue-tint);border-color:var(--ui-blue-border);" @endif>
