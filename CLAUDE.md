@@ -389,6 +389,27 @@ aplikasi ini — tiada apa lagi menulis ke cakera `local`. Pengesahan
 origin ini SVG boleh membawa skrip, dan sepanduk dihidang terus dari cakera
 `public`.
 
+**`php artisan storage:link` ialah langkah deploy, dan ia senyap bila
+terlupa.** `public/storage` ialah symlink dan diabaikan git, jadi ia tidak
+datang bersama repo. Tanpanya `/storage/…` jatuh ke Laravel dan bukan ke
+pelayan web — dan sepanduk **hilang hanya di pelayan**, kerana nginx Herd
+menghidang URI itu sebagai fail statik pada mesin pembangunan. Diukur: header
+`ETag`/`Accept-Ranges` tanpa header PHP untuk fail yang ada, 403 untuk yang
+tiada.
+
+**Sebut cakera `public` pada nama bila menjana URL sepanduk.** `Storage::url()`
+tanpa nama menanya cakera **lalai**, iaitu `local` (`.env`), direktori lain yang
+tiada sepanduk. Ia nampak betul kerana kedua-dua cakera menjawab di `/storage`
+— tetapi cakera `local` memulangkan `/storage/…` **relatif akar**, yang
+menunjuk ke akar domain dan memusnahkan pemasangan subpath. Cakera `public`
+membina atas `APP_URL`.
+
+**`'serve'` pada cakera `local` ialah `false`, dan Laravel menghantarnya
+`true`.** Dihidupkan, ia mendaftar dua route di `/storage/{path}` — GET membaca
+`storage/app/private` dan PUT **menulis** ke sana. Kedua-duanya menuntut URL
+bertandatangan dengan `APP_KEY`, jadi bukan lubang; tetapi aplikasi ini tidak
+pernah menyentuh cakera `local` langsung, dan GET itu menaungi URI sepanduk.
+
 ### `$unreadNotificationCount` disediakan oleh senarai view, bukan `*`
 
 View composer dalam `AppServiceProvider` menamakan setiap view yang membacanya.
