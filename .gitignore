@@ -38,10 +38,14 @@
 # configuration. Only the per-machine half leaves.
 /.claude/settings.local.json
 
-# Participant lists exported from Excel. These carry real IC and phone numbers,
-# and git never forgets: once pushed, personal data stays in the history even if
-# the file is deleted later. Read at run time; never committed.
-/*.csv
+# Participant lists exported from Excel, and anything exported back out of the
+# office dump. These carry real names, IC and phone numbers, and git never
+# forgets: once pushed, personal data stays in the history even if the file is
+# deleted later. Read at run time; never committed.
+#
+# NOT `/*.csv` — that anchors to the repo root and leaves every subfolder open.
+# A folder of exports is exactly how such a file reaches a public remote.
+*.csv
 
 # OS noise
 .DS_Store
