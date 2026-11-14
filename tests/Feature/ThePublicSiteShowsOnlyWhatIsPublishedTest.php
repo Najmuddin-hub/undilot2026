@@ -56,13 +56,17 @@ it('shows past events six at a time, and More asks for six more', function () {
     $this->get(route('home', ['past' => 12]))->assertSee('Old Fair 8')->assertDontSee('past=18', false);
 });
 
-it('gives a signed-in participant the portal bar on the public pages too, bell and all', function () {
+it('gives a signed-in participant the same portal bar on the public pages too', function () {
     $event = Event::factory()->create(['status' => 'open']);
     $this->actingAs(\App\Models\User::factory()->create(), 'web');
 
+    // One bar, three pages: a participant walking from the event list to their
+    // dashboard never sees it change. The dashboard link and the text-size
+    // toggle stand for it — the notification bell used to, until the bar was
+    // narrowed to what a participant has to act on.
     foreach ([route('home'), route('events.show', $event), route('dashboard')] as $url) {
         $this->get($url)->assertOk()
-            ->assertSee(route('notifications.index'))
+            ->assertSee(route('dashboard'))
             ->assertSee('apTextSizeToggle', false);
     }
 });

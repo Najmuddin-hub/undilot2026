@@ -109,8 +109,12 @@ it('opens the summary of a past event in a new tab, under construction for now, 
         ->assertOk()
         ->assertSee('Karnival Ringkasan')
         ->assertSee('Page under construction');
-    // Still under Past events in the menu.
-    expect($summary->getContent())->toMatch('/data-icon="past-events"\s+class="ap-nav-item active"/');
+
+    // Past events is NOT on the participant's nav — the bar carries only what
+    // they have to act on — so there is no active marker to look for. The page
+    // is reached from a past event's own row, and it still renders.
+    expect(str_contains($summary->getContent(), 'data-icon="past-events"'))
+        ->toBeFalse('Past events is off the nav; an entry here means it came back.');
 
     // Not one it took part in, or not over yet: no such page.
     $theirs = endedEvent('Bukan Kami', 10);
@@ -132,5 +136,8 @@ it('says so when there is no past event yet, and is for a signed-in participant 
         ->assertSee('No past events yet')
         ->assertDontSee('<table', false);
 
-    $this->get(route('dashboard'))->assertSee('href="'.route('past-events').'"', false);
+    // The page is reachable by URL but is NOT offered on the nav: the portal bar
+    // carries what a participant has to act on, and a finished event is not that.
+    expect(str_contains($this->get(route('dashboard'))->getContent(), 'href="'.route('past-events').'"'))
+        ->toBeFalse('Past events is back on the nav.');
 });
