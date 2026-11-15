@@ -294,7 +294,11 @@ lubang; jangan "betulkan".
   baris pendaftaran yang dibuang tidak menyimpan apa-apa.
 - Sebaik cabutan bermula, admin negeri **tidak menambah atau meluluskan**
   sesiapa (`zoneLocked()`); hanya HQ, dan baris HQ disahkan serta-merta. Tiada
-  baris menunggu HQ boleh wujud semasa cabutan berjalan.
+  baris menunggu HQ boleh wujud semasa cabutan berjalan. **Undo juga menambah
+  baris**, jadi ia ditolak untuk semua orang sebaik cabutan bermula — ia
+  memulihkan baris seperti asal (mungkin masih menunggu HQ) dan tanpa
+  pemberitahuan kepada syarikat yang sudah menerima `RemovedFromDraw`. Ditemui
+  oleh ujian 2026-11-15; sebelum itu undo tiada pengawal ini.
 - `first_verified_at` tidak pernah dikosongkan; ia membezakan semakan semula
   daripada yang pertama, supaya peserta diberitahu sekali sahaja.
 
