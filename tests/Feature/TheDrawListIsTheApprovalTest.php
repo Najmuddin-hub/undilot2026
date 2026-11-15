@@ -443,7 +443,7 @@ it('lets only HQ add a company once the draw has started, verified at once', fun
     [$a, $b] = Company::factory()->count(2)->create(['state' => 'Johor']);
     $zone = stateAdmin('Johor');
 
-    $this->actingAs($zone, 'admin')->get(route('admin.events.registrations.index', $event))
+    $this->actingAs($zone, 'admin')->get(route('admin.events.registrations.companies', $event))
         ->assertSee('The draw has started: only HQ can add companies now.');
     $this->post(route('admin.events.registrations.store', $event), ['company_id' => [$a->id]])
         ->assertSessionHas('error', 'The draw has started: only HQ can add companies now.');
