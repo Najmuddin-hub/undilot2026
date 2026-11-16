@@ -242,4 +242,4 @@ yang sudah dibuang (laporan, pengumuman, permohonan sertai) — sahkan dan tutup
 | 2026-11-16 | Penilaian awal; pengawal seeder demo + `migrate:fresh` di pelayan (belum commit) | — | — |
 | 2026-11-16 | K04–K08 dibaiki, 22 ujian baharu, setiap satu dibuktikan menggigit. Suite: 479 lulus, 21 gagal (fixture lama sahaja) | PR #1 | — |
 | 2026-11-16 | K09 dibaiki; label kod kraf pada slip dibetulkan; `.env.example` dibersihkan | PR #2 | — |
-| 2026-11-16 | K10 dibaiki; IC tidak dicetak pada slip (suis `SLIP_SHOWS_IC`, lalai off) | belum push | — |
+| 2026-11-16 | K10 dibaiki; IC pada slip di belakang suis `SLIP_SHOWS_IC` (lalai **on** — IC dicetak, keputusan pemilik) | belum push | — |
