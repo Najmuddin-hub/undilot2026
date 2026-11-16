@@ -70,3 +70,8 @@ Thumbs.db
 
 # Scratch SDD: ledger kemajuan, brief tugasan, pakej semakan.
 /.superpowers/
+
+# Senarai peserta sebenar dari pejabat: data peribadi. Repo ini AWAM.
+/docs/SLIDE SENARAI PEMILIHAN USAHAWAN FKJ 2026.xlsx
+# Fail kunci Office semasa dokumen dibuka.
+~$*
